@@ -19,7 +19,6 @@ namespace SummonerNotes {
         public int InstructionPage = 1;
         public MainForm() {
             InitializeComponent();
-            Task populate = PopulatePlayerListAsync();
             LoadListsFromFile();
 
             WeakBox.DrawItem += WeakBox_DrawItem;
@@ -157,7 +156,10 @@ namespace SummonerNotes {
                         // Parse the summoner information from the response and extract the summoner name
                         // Add the summoner name to the participantNames list
                         // For example, you can use JSON serialization/deserialization to parse the response.
-                        // participantNames.Add(parsedSummonerName);
+                        string[] responseArray = responseBody.Split(new char[] { '\r', });
+                        foreach (string parsedSummonerName in responseArray) {
+                            participantNames.Add(parsedSummonerName);
+                        }
                     }
                 }
                 catch (Exception) {
@@ -252,8 +254,7 @@ namespace SummonerNotes {
         }
 
        public void LookupButton_MouseClick(object sender, EventArgs e) {
-            
-            }
+
         }
 
         public static class InputBox {
