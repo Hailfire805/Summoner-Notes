@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 using Button = System.Windows.Forms.Button;
 using Label = System.Windows.Forms.Label;
 using ListBox = System.Windows.Forms.ListBox;
 using TextBox = System.Windows.Forms.TextBox;
+using System.Web.Configuration;
 
 namespace SummonerNotes {
     public partial class MainForm : Form {
+        private const string RiotApiBaseUrl = "https://na1.api.riotgames.com";
         private List<string> StrongList = new List<string>();
         private List<string> WeakList = new List<string>();
-        public string[] InstructionLists = new string[] { ($"1/4\tSummoner Notes is an application for recording notes on different players that you meet while playing League of Legends.\n\nTo do this it uses the Riot API to lookup the names of the players on each team and allows you to add players you meet to one of two list:\n\nList 1 is for players you felt were playing skillfully or who overall impressed you and that you'd want to play around if you meet them again in the future.\n\nList 2 is for players you felt were playing poorly and who you'd not put your life in the hands of in the future.\n\nThe value of this application is determined by how you chose to use it.\n\nWhen used correctly, you are able to prepare yourself and play around your strongest allies.\n\nIt also allows you to know who on the enemy team you need to shutdown."), ($"2/4\tUsages:\n\nSummoner Notes is an effective tool for a few different tasks a player may wish to complete in their time playing league."), ($"3/4\tPlayer Details and History"), ($"4/4\tMaking Valuable notes for the future") } ;
-        public string Id = "PgXPUY5KIvZx3IfZdzHIVEpu9JJjEKOUmnDsWKc1sn7RDPo";
+        public string[] InstructionLists = new string[] { ($"1/4\tSummoner Notes is an application for recording notes on different players that you meet while playing League of Legends.\n\nTo do this it uses the Riot API to lookup the names of the players on each team and allows you to add players you meet to one of two list:\n\nList 1 is for players you felt were playing skillfully or who overall impressed you and that you'd want to play around if you meet them again in the future.\n\nList 2 is for players you felt were playing poorly and who you'd not put your life in the hands of in the future.\n\nThe value of this application is determined by how you chose to use it.\n\nWhen used correctly, you are able to prepare yourself and play around your strongest allies.\n\nIt also allows you to know who on the enemy team you need to shutdown."), ($"2/4\tUsages:\n\nSummoner Notes is an effective tool for a few different tasks a player may wish to complete in their time playing league."), ($"3/4\tPlayer Details and History"), ($"4/4\tMaking Valuable notes for the future") };
         public int InstructionPage = 1;
-        
         public MainForm() {
             InitializeComponent();
-            PopulatePlayerList();
+            Task populate = PopulatePlayerListAsync();
             LoadListsFromFile();
-
 
             WeakBox.DrawItem += WeakBox_DrawItem;
             StrongBox.DrawItem += StrongBox_DrawItem;
@@ -27,8 +28,9 @@ namespace SummonerNotes {
             StrongBox.SelectedIndexChanged += SelectedChanged;
             AlliedBox.SelectedIndexChanged += SelectedChanged;
             EnemyBox.SelectedIndexChanged += SelectedChanged;
+            LookupButton.MouseClick += LookupButton_MouseClick;
         }
-        
+
         // Public Methods
         public void LoadListsFromFile() {
             if (System.IO.File.Exists("./lists.txt")) {
@@ -65,7 +67,7 @@ namespace SummonerNotes {
             StrongBox.Items.AddRange(StrongList.ToArray());
             WeakBox.Items.AddRange(WeakList.ToArray());
         }
-        
+
         // Private Methods
         private void AddButton_Click(object sender, EventArgs e) {
             if (AlliedBox.SelectedIndex != -1) {
@@ -128,29 +130,51 @@ namespace SummonerNotes {
             else if (StrongBox.SelectedIndex != -1) {
                 ShowDetailsForm(StrongBox.SelectedItem.ToString());
             }
-        }
-       
-       
+        } 
+
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
             SaveListsToFile();
         }
-        private void PopulatePlayerList() {
-            // Simulated Riot API response
-            List<string> participantNames = new List<string>
-            {
-                "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Helen", "Isaac", "Jack"
-            };
+        private async Task PopulatePlayerListAsync(string player) {
+            string RiotApiKey = WebConfigurationManager.AppSettings["RiotApiKey"];
+            using (HttpClient client = new HttpClient()) {
+                string summonerNamesEndpoint = "/lol/summoner/v4/summoners/by-name/";
 
-            foreach (var name in participantNames) {
-                if (name != "YourSummonerName") {
-                    AlliedBox.Items.Add(name);
+                List<string> participantNames = new List<string>();
+
+                // Replace these sample summoner names with actual summoner names you want to retrieve
+                string summonerName = player;
+
+                UriBuilder uriBuilder = new UriBuilder(RiotApiBaseUrl + summonerNamesEndpoint + Uri.EscapeDataString(summonerName)) {
+                    Query = $"api_key={RiotApiKey}"
+                };
+
+                try {
+                    HttpResponseMessage response = await client.GetAsync(uriBuilder.Uri);
+                    if (response.IsSuccessStatusCode) {
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        // Parse the summoner information from the response and extract the summoner name
+                        // Add the summoner name to the participantNames list
+                        // For example, you can use JSON serialization/deserialization to parse the response.
+                        // participantNames.Add(parsedSummonerName);
+                    }
+                }
+                catch (Exception) {
+                    // Handle and log any exceptions that occur during the API request.
+                }
+                // Once you have populated the participantNames list, add them to the AlliedBox
+                foreach (var name in participantNames) {
+                    if (name != "YourSummonerName") {
+                        AlliedBox.Items.Add(name);
+                    }
                 }
             }
-        }   
+        }
         private void RefreshButton_Click(object sender, EventArgs e) {
             // Clear and repopulate the player list
             AlliedBox.Items.Clear();
-            PopulatePlayerList();
+        
         }
         private void RemoveButton_Click(object sender, EventArgs e) {
             if (StrongBox.SelectedIndex != -1) {
@@ -162,7 +186,7 @@ namespace SummonerNotes {
                 WeakList.Remove(selectedPlayer); // Remove the entire entry
             }
             UpdateLists();
-    }
+        }
         private void SelectedChanged(object sender, EventArgs e) {
             var selectedListBox = (ListBox) sender;
 
@@ -184,7 +208,9 @@ namespace SummonerNotes {
 
         private void PreviousButton_Click(object sender, EventArgs e) {
             int newpage = InstructionPage > 1 ? InstructionPage -= 1 : InstructionPage;
-            if (newpage == 1) { PreviousButton.Visible = false; }
+            if (newpage == 1) {
+                PreviousButton.Visible = false;
+            }
             NextButton.Visible = true;
             Instructions.Text = $"{InstructionLists[newpage - 1]}";
         }
@@ -195,7 +221,7 @@ namespace SummonerNotes {
             }
             PreviousButton.Visible = true;
             Instructions.Text = $"{InstructionLists[newpage - 1]}";
-            
+
         }
 
         private void StrongRadioButton_CheckedChanged(object sender, EventArgs e) {
@@ -205,7 +231,6 @@ namespace SummonerNotes {
         private void WeakRadioButton_CheckedChanged(object sender, EventArgs e) {
 
         }
-
         private void EnemyLabel_Click(object sender, EventArgs e) {
 
         }
@@ -222,53 +247,57 @@ namespace SummonerNotes {
 
         private void SummonerBox_Leave(object sender, EventArgs e) {
             if (SummonerBox.Text == "") {
-                SummonerBox.Text = "Name..."; 
+                SummonerBox.Text = "Name...";
             }
-
         }
-    }
 
-    public static class InputBox {
-        public static string Show(string title, string promptText) {
-            Form form = new Form();
-            Label label = new Label();
-            TextBox textBox = new TextBox();
-            Button buttonOk = new Button();
-            Button buttonCancel = new Button();
-
-            form.Text = title;
-            label.Text = promptText;
-
-            buttonOk.Text = "OK";
-            buttonCancel.Text = "Cancel";
-            buttonOk.DialogResult = DialogResult.OK;
-            buttonCancel.DialogResult = DialogResult.Cancel;
-
-            label.SetBounds(9, 20, 372, 13);
-            textBox.SetBounds(12, 36, 372, 20);
-            buttonOk.SetBounds(228, 72, 75, 23);
-            buttonCancel.SetBounds(309, 72, 75, 23);
-
-            label.AutoSize = true;
-            textBox.Anchor |= AnchorStyles.Right;
-            buttonOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-
-            form.ClientSize = new System.Drawing.Size(396, 107);
-            form.Controls.AddRange(new Control[] { label, textBox, buttonOk, buttonCancel });
-            form.ClientSize = new System.Drawing.Size(Math.Max(300, label.Right + 10), form.ClientSize.Height);
-            form.FormBorderStyle = FormBorderStyle.FixedDialog;
-            form.StartPosition = FormStartPosition.CenterScreen;
-            form.MinimizeBox = false;
-            form.MaximizeBox = false;
-            form.AcceptButton = buttonOk;
-            form.CancelButton = buttonCancel;
-
-            DialogResult dialogResult = form.ShowDialog();
-            if (dialogResult == DialogResult.OK) {
-                return textBox.Text;
+       public void LookupButton_MouseClick(object sender, EventArgs e) {
+            
             }
-            return "";
+        }
+
+        public static class InputBox {
+            public static string Show(string title, string promptText) {
+                Form form = new Form();
+                Label label = new Label();
+                TextBox textBox = new TextBox();
+                Button buttonOk = new Button();
+                Button buttonCancel = new Button();
+
+                form.Text = title;
+                label.Text = promptText;
+
+                buttonOk.Text = "OK";
+                buttonCancel.Text = "Cancel";
+                buttonOk.DialogResult = DialogResult.OK;
+                buttonCancel.DialogResult = DialogResult.Cancel;
+
+                label.SetBounds(9, 20, 372, 13);
+                textBox.SetBounds(12, 36, 372, 20);
+                buttonOk.SetBounds(228, 72, 75, 23);
+                buttonCancel.SetBounds(309, 72, 75, 23);
+
+                label.AutoSize = true;
+                textBox.Anchor |= AnchorStyles.Right;
+                buttonOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+                buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+                form.ClientSize = new System.Drawing.Size(396, 107);
+                form.Controls.AddRange(new Control[] { label, textBox, buttonOk, buttonCancel });
+                form.ClientSize = new System.Drawing.Size(Math.Max(300, label.Right + 10), form.ClientSize.Height);
+                form.FormBorderStyle = FormBorderStyle.FixedDialog;
+                form.StartPosition = FormStartPosition.CenterScreen;
+                form.MinimizeBox = false;
+                form.MaximizeBox = false;
+                form.AcceptButton = buttonOk;
+                form.CancelButton = buttonCancel;
+
+                DialogResult dialogResult = form.ShowDialog();
+                if (dialogResult == DialogResult.OK) {
+                    return textBox.Text;
+                }
+                return "";
+            }
         }
     }
 }

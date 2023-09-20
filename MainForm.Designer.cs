@@ -193,7 +193,9 @@
             // 
             resources.ApplyResources(this.LookupButton, "LookupButton");
             this.LookupButton.Name = "LookupButton";
-            this.LookupButton.UseVisualStyleBackColor = true;
+            this.LookupButton.UseVisualStyleBackColor = false;
+            this.LookupButton.Click += new System.EventHandler(this.LookupButton_MouseClick);
+            this.LookupButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LookupButton_MouseClick);
             // 
             // MainForm
             // 
