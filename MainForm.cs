@@ -9,10 +9,20 @@ using Label = System.Windows.Forms.Label;
 using ListBox = System.Windows.Forms.ListBox;
 using TextBox = System.Windows.Forms.TextBox;
 using System.Web.Configuration;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Security.Cryptography;
+using System.Numerics;
+using System.Drawing.Text;
 
 namespace SummonerNotes {
     public partial class MainForm : Form {
         private const string RiotApiBaseUrl = "https://na1.api.riotgames.com";
+        private const string RiotApiSecondUrl = "https://americas.api.riotgames.com";
+        public string match = "";
+        public string puuid = "";
         private List<string> StrongList = new List<string>();
         private List<string> WeakList = new List<string>();
         public string[] InstructionLists = new string[] { ($"1/4\tSummoner Notes is an application for recording notes on different players that you meet while playing League of Legends.\n\nTo do this it uses the Riot API to lookup the names of the players on each team and allows you to add players you meet to one of two list:\n\nList 1 is for players you felt were playing skillfully or who overall impressed you and that you'd want to play around if you meet them again in the future.\n\nList 2 is for players you felt were playing poorly and who you'd not put your life in the hands of in the future.\n\nThe value of this application is determined by how you chose to use it.\n\nWhen used correctly, you are able to prepare yourself and play around your strongest allies.\n\nIt also allows you to know who on the enemy team you need to shutdown."), ($"2/4\tUsages:\n\nSummoner Notes is an effective tool for a few different tasks a player may wish to complete in their time playing league."), ($"3/4\tPlayer Details and History"), ($"4/4\tMaking Valuable notes for the future") };
@@ -27,7 +37,6 @@ namespace SummonerNotes {
             StrongBox.SelectedIndexChanged += SelectedChanged;
             AlliedBox.SelectedIndexChanged += SelectedChanged;
             EnemyBox.SelectedIndexChanged += SelectedChanged;
-            LookupButton.MouseClick += LookupButton_MouseClick;
         }
 
         // Public Methods
@@ -129,54 +138,16 @@ namespace SummonerNotes {
             else if (StrongBox.SelectedIndex != -1) {
                 ShowDetailsForm(StrongBox.SelectedItem.ToString());
             }
-        } 
-
+        }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
             SaveListsToFile();
         }
-        private async Task PopulatePlayerListAsync(string player) {
-            string RiotApiKey = WebConfigurationManager.AppSettings["RiotApiKey"];
-            using (HttpClient client = new HttpClient()) {
-                string summonerNamesEndpoint = "/lol/summoner/v4/summoners/by-name/";
-
-                List<string> participantNames = new List<string>();
-
-                // Replace these sample summoner names with actual summoner names you want to retrieve
-                string summonerName = player;
-
-                UriBuilder uriBuilder = new UriBuilder(RiotApiBaseUrl + summonerNamesEndpoint + Uri.EscapeDataString(summonerName)) {
-                    Query = $"api_key={RiotApiKey}"
-                };
-
-                try {
-                    HttpResponseMessage response = await client.GetAsync(uriBuilder.Uri);
-                    if (response.IsSuccessStatusCode) {
-                        string responseBody = await response.Content.ReadAsStringAsync();
-                        // Parse the summoner information from the response and extract the summoner name
-                        // Add the summoner name to the participantNames list
-                        // For example, you can use JSON serialization/deserialization to parse the response.
-                        string[] responseArray = responseBody.Split(new char[] { '\r', });
-                        foreach (string parsedSummonerName in responseArray) {
-                            participantNames.Add(parsedSummonerName);
-                        }
-                    }
-                }
-                catch (Exception) {
-                    // Handle and log any exceptions that occur during the API request.
-                }
-                // Once you have populated the participantNames list, add them to the AlliedBox
-                foreach (var name in participantNames) {
-                    if (name != "YourSummonerName") {
-                        AlliedBox.Items.Add(name);
-                    }
-                }
-            }
-        }
         private void RefreshButton_Click(object sender, EventArgs e) {
             // Clear and repopulate the player list
             AlliedBox.Items.Clear();
-        
+            LookupButton.PerformClick();
+
         }
         private void RemoveButton_Click(object sender, EventArgs e) {
             if (StrongBox.SelectedIndex != -1) {
@@ -253,9 +224,94 @@ namespace SummonerNotes {
             }
         }
 
-       public void LookupButton_MouseClick(object sender, EventArgs e) {
-
+        private void LookupButton_MouseClick(object sender, EventArgs e) {
+            GetPlayers();
         }
+
+
+        async private void GetPlayers() {
+            string RiotApiKey = WebConfigurationManager.AppSettings["RiotApiKey"];
+            using (HttpClient client = new HttpClient()) {
+                string summonerNamesEndpoint = "/lol/summoner/v4/summoners/by-name/";
+
+                List<string> participantNames = new List<string>();
+
+                // Replace these sample summoner names with actual summoner names you want to retrieve
+                string player = SummonerBox.Text;
+                string CurrentSummonerName = player;
+                Console.WriteLine(Uri.EscapeDataString(CurrentSummonerName));
+                UriBuilder GetSummonerUri = new UriBuilder(RiotApiBaseUrl + summonerNamesEndpoint + Uri.EscapeDataString(CurrentSummonerName)) {
+                    Query = $"api_key={RiotApiKey}"
+                };
+
+                try {
+                    HttpResponseMessage response = await client.GetAsync(GetSummonerUri.Uri);
+                    if (response.IsSuccessStatusCode) {
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        int lineNumber = 1;
+                        foreach (string line in responseBody.Split(new char[] { ',' })) {
+                            var lineParts = line.Split(':');
+                            string CleanedLine = $"{lineParts[0]} : {lineParts[1]}";
+                            if (lineParts[0].Trim() == "\"name\"")
+                                participantNames.Add(lineParts[1]);
+                            else if (lineParts[0].Trim() == "\"puuid\"") {
+
+                                puuid = lineParts[1];
+                                puuid = puuid.Substring(1, puuid.Length - 2);
+                                Console.WriteLine($"{puuid}");
+                            }
+                            Console.WriteLine($"Line {lineNumber}: {CleanedLine}");
+                            lineNumber++;
+                        }
+                    }
+                }
+                catch (Exception) {
+
+                }
+            }
+        using(HttpClient client2 = new HttpClient()) {
+            string matchesEndpoint = $"/lol/match/v5/matches/by-puuid/{puuid}/ids";
+            UriBuilder GetMatchesUri = new UriBuilder(RiotApiSecondUrl + matchesEndpoint) {
+                Query = $"api_key={RiotApiKey}"
+            };
+                Console.WriteLine(GetMatchesUri.ToString());
+                try {
+                    HttpResponseMessage response = await client2.GetAsync(GetMatchesUri.Uri);
+                    Console.WriteLine(response.StatusCode.ToString());
+                    if (response.IsSuccessStatusCode) {
+                        var responseBody = await response.Content.ReadAsStringAsync();
+                        var matchclean = responseBody.Substring(1, responseBody.Length - 2);
+                        var matchlist = matchclean.Split(new char[] {','});
+                        Console.WriteLine($"{matchlist[0]}");
+                        var matchcleaned = matchlist[0].Substring(1, matchlist[0].Length - 2);
+                        match = matchcleaned;
+                    }
+                 }
+                catch (Exception) {
+
+                }
+            }
+            using (HttpClient client3 = new HttpClient()) {
+                string matchEndpoint = $"/lol/match/v5/matches/{match.Trim()}";
+                UriBuilder GetMatchUri = new UriBuilder(RiotApiSecondUrl + matchEndpoint) {
+                    Query = $"api_key={RiotApiKey}"
+                };
+                Console.WriteLine(GetMatchUri.ToString());
+                try {
+                    HttpResponseMessage response = await client3.GetAsync(GetMatchUri.Uri);
+                    Console.WriteLine(response.StatusCode.ToString());
+                    if (response.IsSuccessStatusCode) {
+                        var responseBody = await response.Content.ReadAsStringAsync();
+                        var matchclean = responseBody.Substring(1, responseBody.Length - 2);
+                    }
+                    // Successfully pulled match data now need to parse and locate the correct Info that I am trying to find
+                }
+                catch (Exception) {
+
+                }
+            }
+        }
+
 
         public static class InputBox {
             public static string Show(string title, string promptText) {
