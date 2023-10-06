@@ -47,6 +47,8 @@
             this.SummonerLabel = new System.Windows.Forms.Label();
             this.LookupButton = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.GamesCount = new System.Windows.Forms.Label();
+            this.Count = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // AlliedBox
@@ -196,11 +198,26 @@
             this.LookupButton.UseVisualStyleBackColor = false;
             this.LookupButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LookupButton_MouseClick);
             // 
+            // GamesCount
+            // 
+            this.GamesCount.BackColor = System.Drawing.SystemColors.Window;
+            resources.ApplyResources(this.GamesCount, "GamesCount");
+            this.GamesCount.Name = "GamesCount";
+            this.GamesCount.UseMnemonic = false;
+            // 
+            // Count
+            // 
+            resources.ApplyResources(this.Count, "Count");
+            this.Count.Name = "Count";
+            this.Count.Enter += new System.EventHandler(this.Count_Enter);
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             resources.ApplyResources(this, "$this");
             this.BackColor = System.Drawing.SystemColors.Info;
+            this.Controls.Add(this.Count);
+            this.Controls.Add(this.GamesCount);
             this.Controls.Add(this.LookupButton);
             this.Controls.Add(this.SummonerLabel);
             this.Controls.Add(this.SummonerBox);
@@ -257,6 +274,8 @@
         private System.Windows.Forms.Label SummonerLabel;
         private System.Windows.Forms.Button LookupButton;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Label GamesCount;
+        private System.Windows.Forms.TextBox Count;
     }
 }
 

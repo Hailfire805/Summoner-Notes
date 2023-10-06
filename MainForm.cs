@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Camille.Enums;
+using Camille.RiotGames;
+
+using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Web.Configuration;
 using System.Windows.Forms;
 
@@ -11,12 +13,7 @@ using TextBox = System.Windows.Forms.TextBox;
 
 namespace SummonerNotes {
     public partial class MainForm : Form {
-        private const string RiotApiBaseUrl = "https://na1.api.riotgames.com";
-        private const string RiotApiSecondUrl = "https://americas.api.riotgames.com";
-        public string match = "";
-        public string puuid = "";
-        public List<string> PlayerNames = new List<string>();
-        public List<string> participantIds = new List<string>();
+        public int playerTeam = 100 | 200;
         private List<string> StrongList = new List<string>();
         private List<string> WeakList = new List<string>();
         public string[] InstructionLists = new string[] { ($"1/4\tSummoner Notes is an application for recording notes on different players that you meet while playing League of Legends.\n\nTo do this it uses the Riot API to lookup the names of the players on each team and allows you to add players you meet to one of two list:\n\nList 1 is for players you felt were playing skillfully or who overall impressed you and that you'd want to play around if you meet them again in the future.\n\nList 2 is for players you felt were playing poorly and who you'd not put your life in the hands of in the future.\n\nThe value of this application is determined by how you chose to use it.\n\nWhen used correctly, you are able to prepare yourself and play around your strongest allies.\n\nIt also allows you to know who on the enemy team you need to shutdown."), ($"2/4\tUsages:\n\nSummoner Notes is an effective tool for a few different tasks a player may wish to complete in their time playing league."), ($"3/4\tPlayer Details and History"), ($"4/4\tMaking Valuable notes for the future") };
@@ -39,7 +36,7 @@ namespace SummonerNotes {
                 StrongList.Clear();
                 WeakList.Clear();
 
-                string[] lines = System.IO.File.ReadAllLines("./lists.txt");
+                var lines = System.IO.File.ReadAllLines("./lists.txt");
                 foreach (string line in lines) {
                     if (!string.IsNullOrWhiteSpace(line)) {
                         if (line.StartsWith("List1: ")) {
@@ -125,6 +122,7 @@ namespace SummonerNotes {
             listBox.SelectedIndex = -1;
             listBox.SelectedIndexChanged += SelectedChanged;
         }
+
         private void DetailsButton_Click(object sender, EventArgs e) {
             if (WeakBox.SelectedIndex != -1) {
                 ShowDetailsForm(WeakBox.SelectedItem.ToString());
@@ -137,12 +135,7 @@ namespace SummonerNotes {
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
             SaveListsToFile();
         }
-        private void RefreshButton_Click(object sender, EventArgs e) {
-            // Clear and repopulate the player list
-            AlliedBox.Items.Clear();
-            LookupButton.PerformClick();
 
-        }
         private void RemoveButton_Click(object sender, EventArgs e) {
             if (StrongBox.SelectedIndex != -1) {
                 string selectedPlayer = StrongBox.SelectedItem.ToString(); // Use SelectedItem instead of SelectedValue
@@ -219,178 +212,106 @@ namespace SummonerNotes {
         }
 
         private void LookupButton_MouseClick(object sender, EventArgs e) {
+            AlliedBox.Items.Clear();
+            EnemyBox.Items.Clear();
             GetPlayers();
         }
 
-
-        private async void GetPlayers() {
-            string RiotApiKey = WebConfigurationManager.AppSettings["RiotApiKey"];
-            using (HttpClient client = new HttpClient()) {
-                string summonerNamesEndpoint = "/lol/summoner/v4/summoners/by-name/";
-
-                List<string> participantNames = new List<string>();
-
-                string player = SummonerBox.Text;
-                string CurrentSummonerName = player;
-                Console.WriteLine(Uri.EscapeDataString(CurrentSummonerName));
-                UriBuilder GetSummonerUri = new UriBuilder(RiotApiBaseUrl + summonerNamesEndpoint + Uri.EscapeDataString(CurrentSummonerName)) {
-                    Query = $"api_key={RiotApiKey}"
-                };
-
-                try {
-                    HttpResponseMessage response = await client.GetAsync(GetSummonerUri.Uri);
-                    if (response.IsSuccessStatusCode) {
-                        string responseBody = await response.Content.ReadAsStringAsync();
-                        int lineNumber = 1;
-                        foreach (string line in responseBody.Split(new char[] { ',' })) {
-                            string[] lineParts = line.Split(':');
-                            string CleanedLine = $"{lineParts[0]} : {lineParts[1]}";
-                            if (lineParts[0].Trim() == "\"name\"") {
-                                participantNames.Add(lineParts[1]);
-                            }
-                            else if (lineParts[0].Trim() == "\"puuid\"") {
-
-                                puuid = lineParts[1];
-                                puuid = puuid.Substring(1, puuid.Length - 2);
-                                Console.WriteLine($"{puuid}");
-                            }
-                            Console.WriteLine($"Line {lineNumber}: {CleanedLine}");
-                            lineNumber++;
-                        }
-                    }
-                }
-                catch (Exception) {
-
-                }
-            }
-            using (HttpClient client2 = new HttpClient()) {
-                string matchesEndpoint = $"/lol/match/v5/matches/by-puuid/{puuid}/ids";
-                UriBuilder GetMatchesUri = new UriBuilder(RiotApiSecondUrl + matchesEndpoint) {
-                    Query = $"api_key={RiotApiKey}"
-                };
-                Console.WriteLine(GetMatchesUri.ToString());
-                try {
-                    HttpResponseMessage response = await client2.GetAsync(GetMatchesUri.Uri);
-                    Console.WriteLine(response.StatusCode.ToString());
-                    if (response.IsSuccessStatusCode) {
-                        string responseBody = await response.Content.ReadAsStringAsync();
-                        string matchclean = responseBody.Substring(1, responseBody.Length - 2);
-                        string[] matchlist = matchclean.Split(new char[] { ',' });
-                        // Console.WriteLine($"{matchlist[0]}");
-                        string matchcleaned = matchlist[0].Substring(1, matchlist[0].Length - 2);
-                        match = matchcleaned;
-                    }
-                }
-                catch (Exception) {
-
-                }
-            }
-            using (HttpClient client3 = new HttpClient()) {
-                string matchEndpoint = $"/lol/match/v5/matches/{match.Trim()}";
-                UriBuilder GetMatchUri = new UriBuilder(RiotApiSecondUrl + matchEndpoint) {
-                    Query = $"api_key={RiotApiKey}"
-                };
-                // Console.WriteLine(GetMatchUri.ToString());
-                try {
-                    HttpResponseMessage response = await client3.GetAsync(GetMatchUri.Uri);
-                    Console.WriteLine(response.StatusCode.ToString());
-                    if (response.IsSuccessStatusCode) {
-                        string responseBody = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine(responseBody);
-                        string searcher = $"\"participants\":";
-                        int searcherLength = searcher.Length;
-                        int participantStart = responseBody.IndexOf(searcher) + searcherLength;
-                        string participantSection = responseBody.Substring(participantStart, responseBody.Length - participantStart);
-                        int particpantEnd = participantSection.IndexOf("]");
-                        string participants = participantSection.Substring(1, particpantEnd - 1);
-                        // Console.WriteLine($"{participants}");
-                        string[] Ids = participants.Split(',');
-                        // Console.WriteLine(Ids.Length);
-                        foreach (string Id in Ids) {
-                            participantIds.Add(Id);
-                        }
-                    }
-
-                }
-                catch (Exception) {
-
-                }
-            }
-            using (HttpClient client4 = new HttpClient()) {
-                foreach (string participantId in participantIds) {
-                    int idLength = participantId.Length - 2;
-                    string trimmedId = participantId.Substring(1, idLength);
-                    // Console.WriteLine(trimmedId);
-                    string ParticipantNameEndpoint = $"/lol/summoner/v4/summoners/by-puuid/{trimmedId}";
-                    UriBuilder GetParticipantUri = new UriBuilder(RiotApiBaseUrl + ParticipantNameEndpoint) {
-                        Query = $"api_key={RiotApiKey}"
-                    };
-                    // Console.WriteLine(GetParticipantUri);
-                    try {
-                        HttpResponseMessage response = await client4.GetAsync(GetParticipantUri.Uri);
-                        if (response.IsSuccessStatusCode) {
-                            string resultBody = await response.Content.ReadAsStringAsync();
-                            Console.WriteLine(resultBody);
-                            string[] playerInfo = resultBody.Split(',');
-                            foreach (string info in playerInfo) {
-                                string[] infoParts = info.Split(':');
-                                if (infoParts[0].Trim() == "\"name\"") {
-                                    Console.WriteLine(infoParts[1]);
-                                    string cleanedName = infoParts[1].Substring(1, infoParts[1].Length - 2);
-                                    PlayerNames.Add(cleanedName);
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception) {
-                    }
-                }
-                foreach(string Player in PlayerNames) {
-                    AlliedBox.Items.Add(Player);
-                }
+        private void Count_Enter(object sender, EventArgs e) {
+            if (Count.Text == "# of Games") {
+                Count.Text = "";
             }
         }
 
 
-        public static class InputBox {
-            public static string Show(string title, string promptText) {
-                Form form = new Form();
-                Label label = new Label();
-                TextBox textBox = new TextBox();
-                Button buttonOk = new Button();
-                Button buttonCancel = new Button();
+        private void GetPlayers() {
+            var RiotApiKey = WebConfigurationManager.AppSettings["RiotApiKey"];
+            var riotApi = RiotGamesApi.NewInstance(RiotApiKey);
+            // Get summoners by name synchronously. (Note: async is faster as it allows simultaneous requests).
+            var summoners = new[]
+            {
+                riotApi.SummonerV4().GetBySummonerName(PlatformRoute.NA1, SummonerBox.Text)
+            };
+            var matchList = new List<Camille.RiotGames.MatchV5.Match>();
+            ;
+            var games = 1;
+            foreach (var summoner in summoners) {
+                if (Count.Text == null | Count.Text == "" | Count.Text == "# of Games") {
+                }
+                else {
+                    games = Int32.Parse(Count.Text);
+                }
+                var matches = riotApi.MatchV5().GetMatchIdsByPUUID(RegionalRoute.AMERICAS, summoner.Puuid, games);
 
-                form.Text = title;
-                label.Text = promptText;
-
-                buttonOk.Text = "OK";
-                buttonCancel.Text = "Cancel";
-                buttonOk.DialogResult = DialogResult.OK;
-                buttonCancel.DialogResult = DialogResult.Cancel;
-
-                label.SetBounds(9, 20, 372, 13);
-                textBox.SetBounds(12, 36, 372, 20);
-                buttonOk.SetBounds(228, 72, 75, 23);
-                buttonCancel.SetBounds(309, 72, 75, 23);
-
-                label.AutoSize = true;
-                textBox.Anchor |= AnchorStyles.Right;
-                buttonOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-                buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-
-                form.ClientSize = new System.Drawing.Size(396, 107);
-                form.Controls.AddRange(new Control[] { label, textBox, buttonOk, buttonCancel });
-                form.ClientSize = new System.Drawing.Size(Math.Max(300, label.Right + 10), form.ClientSize.Height);
-                form.FormBorderStyle = FormBorderStyle.FixedDialog;
-                form.StartPosition = FormStartPosition.CenterScreen;
-                form.MinimizeBox = false;
-                form.MaximizeBox = false;
-                form.AcceptButton = buttonOk;
-                form.CancelButton = buttonCancel;
-
-                DialogResult dialogResult = form.ShowDialog();
-                return dialogResult == DialogResult.OK ? textBox.Text : "";
+                for (var matchNumber = 0; matchNumber < matches.Length; matchNumber++) {
+                    matchList.Add(riotApi.MatchV5().GetMatch(RegionalRoute.AMERICAS, matches[matchNumber]));
+                }
             }
+            for (var matchNumber = 0; matchNumber < matchList.Count; matchNumber++) {
+                Console.WriteLine(matchList[matchNumber]);
+                var participants = matchList[matchNumber].Info.Participants;
+
+                foreach (var participant in participants) {
+                    if (participant != null) {
+                        if (participant.SummonerName == SummonerBox.Text) {
+                            playerTeam = (int) participant.TeamId;
+                        }
+                    }
+                }
+
+                for (var participantNumber = 0; participantNumber < participants.Length; participantNumber++) {
+                    if (((int) participants[participantNumber].TeamId) == playerTeam && participants[participantNumber].SummonerName != SummonerBox.Text) {
+                        AlliedBox.Items.Add(participants[participantNumber].SummonerName);
+                    }
+                    else if (((int) participants[participantNumber].TeamId) != playerTeam) {
+                        EnemyBox.Items.Add(participants[participantNumber].SummonerName);
+
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    public static class InputBox {
+        public static string Show(string title, string promptText) {
+            Form form = new Form();
+            Label label = new Label();
+            TextBox textBox = new TextBox();
+            Button buttonOk = new Button();
+            Button buttonCancel = new Button();
+
+            form.Text = title;
+            label.Text = promptText;
+
+            buttonOk.Text = "OK";
+            buttonCancel.Text = "Cancel";
+            buttonOk.DialogResult = DialogResult.OK;
+            buttonCancel.DialogResult = DialogResult.Cancel;
+
+            label.SetBounds(9, 20, 372, 13);
+            textBox.SetBounds(12, 36, 372, 20);
+            buttonOk.SetBounds(228, 72, 75, 23);
+            buttonCancel.SetBounds(309, 72, 75, 23);
+
+            label.AutoSize = true;
+            textBox.Anchor |= AnchorStyles.Right;
+            buttonOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+            form.ClientSize = new System.Drawing.Size(396, 107);
+            form.Controls.AddRange(new Control[] { label, textBox, buttonOk, buttonCancel });
+            form.ClientSize = new System.Drawing.Size(Math.Max(300, label.Right + 10), form.ClientSize.Height);
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+            form.AcceptButton = buttonOk;
+            form.CancelButton = buttonCancel;
+
+            DialogResult dialogResult = form.ShowDialog();
+            return dialogResult == DialogResult.OK ? textBox.Text : "";
         }
     }
 }
