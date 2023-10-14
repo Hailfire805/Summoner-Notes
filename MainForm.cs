@@ -13,14 +13,24 @@ using TextBox = System.Windows.Forms.TextBox;
 
 namespace SummonerNotes {
     public partial class MainForm : Form {
+
+        // Defualt & Core Variable Declarations
+
         public int playerTeam = 100 | 200;
-        private List<string> StrongList = new List<string>();
-        private List<string> WeakList = new List<string>();
-        public string[] InstructionLists = new string[] { ($"1/4\tSummoner Notes is an application for recording notes on different players that you meet while playing League of Legends.\n\nTo do this it uses the Riot API to lookup the names of the players on each team and allows you to add players you meet to one of two list:\n\nList 1 is for players you felt were playing skillfully or who overall impressed you and that you'd want to play around if you meet them again in the future.\n\nList 2 is for players you felt were playing poorly and who you'd not put your life in the hands of in the future.\n\nThe value of this application is determined by how you chose to use it.\n\nWhen used correctly, you are able to prepare yourself and play around your strongest allies.\n\nIt also allows you to know who on the enemy team you need to shutdown."), ($"2/4\tUsages:\n\nSummoner Notes is an effective tool for a few different tasks a player may wish to complete in their time playing league."), ($"3/4\tPlayer Details and History"), ($"4/4\tMaking Valuable notes for the future") };
+        public List<string> StrongList = new List<string>();
+        public List<string> WeakList = new List<string>();
+        public string[] InstructionLists = new string[] { ($"1/4\tSummoner Notes is an application for recording notes on different players that you meet while playing League of Legends.\n\nTo do this it uses the Riot API to lookup the names of the players on each team and allows you to add players you meet to one of two list:\n\nThe first list is for identifying players you felt were playing skillfully or who overall impressed you and that you'd want to play around if you meet them again in the future.\n\nThe second list is for identifying players you felt were playing poorly and who you'd not put your life in the hands of in the future.\n\nThe value of this application is determined by how you chose to use it.\n\nWhen used correctly, you are able to prepare yourself and play around your strongest allies.\n\nIt also allows you to know who on the enemy team you need to shutdown."), ($"2/4\tUsages:\n\nSummoner Notes is a tool that can be used for several different tasks a player may wish to complete in their time playing league."), ($"3/4\tPlayer Details and History"), ($"4/4\tMaking Valuable notes for the future") };
         public int InstructionPage = 1;
+
         public MainForm() {
+
+            // Initalization
+
             InitializeComponent();
             LoadListsFromFile();
+
+
+            // Startup Events
 
             WeakBox.DrawItem += WeakBox_DrawItem;
             StrongBox.DrawItem += StrongBox_DrawItem;
@@ -30,45 +40,11 @@ namespace SummonerNotes {
             EnemyBox.SelectedIndexChanged += SelectedChanged;
         }
 
-        // Public Methods
-        public void LoadListsFromFile() {
-            if (System.IO.File.Exists("./lists.txt")) {
-                StrongList.Clear();
-                WeakList.Clear();
+        // Events
 
-                var lines = System.IO.File.ReadAllLines("./lists.txt");
-                foreach (string line in lines) {
-                    if (!string.IsNullOrWhiteSpace(line)) {
-                        if (line.StartsWith("List1: ")) {
-                            StrongList.Add(line.Substring(7)); // Remove "List1: " prefix
-                        }
-                        else if (line.StartsWith("List2: ")) {
-                            WeakList.Add(line.Substring(7)); // Remove "List2: " prefix
-                        }
-                    }
-                    UpdateLists();
-                }
-            }
-        }
-        public void SaveListsToFile() {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./lists.txt")) {
-                foreach (string name in StrongList) {
-                    file.WriteLine($"List1: {name}");
-                }
-                foreach (string name in WeakList) {
-                    file.WriteLine($"List2: {name}");
-                }
-            }
-        }
-        public void UpdateLists() {
-            StrongBox.Items.Clear();
-            WeakBox.Items.Clear();
-            StrongBox.Items.AddRange(StrongList.ToArray());
-            WeakBox.Items.AddRange(WeakList.ToArray());
-        }
+        // Button Click Events
 
-        // Private Methods
-        private void AddButton_Click(object sender, EventArgs e) {
+        public void AddButton_Click(object sender, EventArgs e) {
             if (AlliedBox.SelectedIndex != -1) {
                 string selectedPlayer = AlliedBox.SelectedItem.ToString();
                 string reason = InputBox.Show("Add Player", $"Notes for {selectedPlayer}?");
@@ -105,25 +81,14 @@ namespace SummonerNotes {
                 }
             }
         }
-        private void CheckSelection(ListBox listBox, ListBox Reference) {
-            if (listBox != Reference) {
-                ClearSelection(Reference);
-            }
-        }
-        private void ClearButton_Click(object sender, EventArgs e) {
+        public void ClearButton_Click(object sender, EventArgs e) {
             StrongList.Clear();
             WeakList.Clear();
             SaveListsToFile();
             LoadListsFromFile();
             UpdateLists();
         }
-        private void ClearSelection(ListBox listBox) {
-            listBox.SelectedIndexChanged -= SelectedChanged;
-            listBox.SelectedIndex = -1;
-            listBox.SelectedIndexChanged += SelectedChanged;
-        }
-
-        private void DetailsButton_Click(object sender, EventArgs e) {
+        public void DetailsButton_Click(object sender, EventArgs e) {
             if (WeakBox.SelectedIndex != -1) {
                 ShowDetailsForm(WeakBox.SelectedItem.ToString());
             }
@@ -131,12 +96,7 @@ namespace SummonerNotes {
                 ShowDetailsForm(StrongBox.SelectedItem.ToString());
             }
         }
-
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
-            SaveListsToFile();
-        }
-
-        private void RemoveButton_Click(object sender, EventArgs e) {
+        public void RemoveButton_Click(object sender, EventArgs e) {
             if (StrongBox.SelectedIndex != -1) {
                 string selectedPlayer = StrongBox.SelectedItem.ToString(); // Use SelectedItem instead of SelectedValue
                 StrongList.Remove(selectedPlayer); // Remove the entire entry
@@ -147,26 +107,7 @@ namespace SummonerNotes {
             }
             UpdateLists();
         }
-        private void SelectedChanged(object sender, EventArgs e) {
-            ListBox selectedListBox = (ListBox) sender;
-
-            CheckSelection(selectedListBox, StrongBox);
-            CheckSelection(selectedListBox, WeakBox);
-            CheckSelection(selectedListBox, AlliedBox);
-            CheckSelection(selectedListBox, EnemyBox);
-        }
-
-
-        private void ShowDetailsForm(string selectedItemDetails) {
-            DetailsForm detailsForm = new DetailsForm(selectedItemDetails);
-            detailsForm.ShowDialog();
-        }
-        private void StrongBox_DrawItem(object sender, DrawItemEventArgs e) {
-        }
-        private void WeakBox_DrawItem(object sender, DrawItemEventArgs e) {
-        }
-
-        private void PreviousButton_Click(object sender, EventArgs e) {
+        public void PreviousButton_Click(object sender, EventArgs e) {
             int newpage = InstructionPage > 1 ? InstructionPage -= 1 : InstructionPage;
             if (newpage == 1) {
                 PreviousButton.Visible = false;
@@ -174,7 +115,7 @@ namespace SummonerNotes {
             NextButton.Visible = true;
             Instructions.Text = $"{InstructionLists[newpage - 1]}";
         }
-        private void NextButton_Click(object sender, EventArgs e) {
+        public void NextButton_Click(object sender, EventArgs e) {
             int newpage = InstructionPage < 4 ? InstructionPage += 1 : InstructionPage;
             if (newpage == 4) {
                 NextButton.Visible = false;
@@ -183,48 +124,93 @@ namespace SummonerNotes {
             Instructions.Text = $"{InstructionLists[newpage - 1]}";
 
         }
-
-        private void StrongRadioButton_CheckedChanged(object sender, EventArgs e) {
-
-        }
-
-        private void WeakRadioButton_CheckedChanged(object sender, EventArgs e) {
-
-        }
-        private void EnemyLabel_Click(object sender, EventArgs e) {
-
-        }
-
-        private void Instructions_TextChanged(object sender, EventArgs e) {
-
-        }
-
-        private void SummonerBox_Enter(object sender, EventArgs e) {
-            if (SummonerBox.Text == "Name...") {
-                SummonerBox.Text = "";
-            }
-        }
-
-        private void SummonerBox_Leave(object sender, EventArgs e) {
-            if (SummonerBox.Text == "") {
-                SummonerBox.Text = "Name...";
-            }
-        }
-
-        private void LookupButton_MouseClick(object sender, EventArgs e) {
+        public void LookupButton_MouseClick(object sender, EventArgs e) {
             AlliedBox.Items.Clear();
             EnemyBox.Items.Clear();
             GetPlayers();
         }
 
-        private void Count_Enter(object sender, EventArgs e) {
-            if (Count.Text == "# of Games") {
+
+        // Text Focus Events
+
+        public void SummonerBox_Enter(object sender, EventArgs e) {
+            if (SummonerBox.Text == "Name...") {
+                SummonerBox.Text = "";
+            }
+        }
+        public void Count_Enter(object sender, EventArgs e) {
+            if (Count.Text == "Games To Return") {
                 Count.Text = "";
             }
         }
+        public void SummonerBox_Leave(object sender, EventArgs e) {
+            if (SummonerBox.Text == "") {
+                SummonerBox.Text = "Name...";
+            }
+        }
 
+        // Text Content Events
 
-        private void GetPlayers() {
+        public void Instructions_TextChanged(object sender, EventArgs e) {
+
+        }
+        public void Count_TextChanged(object sender, EventArgs e) {
+
+        }
+        public void StrongRadioButton_CheckedChanged(object sender, EventArgs e) {
+
+        }
+        public void WeakRadioButton_CheckedChanged(object sender, EventArgs e) {
+
+        }
+        public void StrongBox_DrawItem(object sender, DrawItemEventArgs e) {
+        }
+        public void WeakBox_DrawItem(object sender, DrawItemEventArgs e) {
+        }
+        public void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
+            SaveListsToFile();
+        }
+
+        // Functions
+
+        // Startup Functions
+
+        public void LoadListsFromFile() {
+            if (System.IO.File.Exists("./Lists/Strong_list.txt") && System.IO.File.Exists("./Lists/Weak_list.txt")) {
+                StrongList.Clear();
+                WeakList.Clear();
+
+                var lines = System.IO.File.ReadAllLines("./Lists/Strong_list.txt");
+                foreach (string line in lines) {
+                    if (!string.IsNullOrWhiteSpace(line)) {
+                        var currentLine = line.Split(':');
+                        var name = currentLine[0];
+                        var value = currentLine[1];
+                        StrongList.Add($"{name}: {value}");
+                    }
+                }
+                lines = System.IO.File.ReadAllLines("./Lists/Weak_list.txt");
+                foreach (string line in lines) {
+                    if (!string.IsNullOrWhiteSpace(line)) {
+                        var currentLine = line.Split(':');
+                        var name = currentLine[0];
+                        var value = currentLine[1];
+                        WeakList.Add($"{name}: {value}");
+                    }
+                    UpdateLists();
+                }
+            }
+        }
+        public void UpdateLists() {
+            StrongBox.Items.Clear();
+            WeakBox.Items.Clear();
+            StrongBox.Items.AddRange(StrongList.ToArray());
+            WeakBox.Items.AddRange(WeakList.ToArray());
+        }
+
+        // Task Functions
+
+        public void GetPlayers() {
             var RiotApiKey = WebConfigurationManager.AppSettings["RiotApiKey"];
             var riotApi = RiotGamesApi.NewInstance(RiotApiKey);
             // Get summoners by name synchronously. (Note: async is faster as it allows simultaneous requests).
@@ -236,7 +222,8 @@ namespace SummonerNotes {
             ;
             var games = 1;
             foreach (var summoner in summoners) {
-                if (Count.Text == null | Count.Text == "" | Count.Text == "# of Games") {
+                if (Count.Text == null | Count.Text == "") {
+                    break;
                 }
                 else {
                     games = Int32.Parse(Count.Text);
@@ -270,9 +257,52 @@ namespace SummonerNotes {
                 }
             }
         }
+        public void ShowDetailsForm(string selectedItemDetails) {
+            DetailsForm detailsForm = new DetailsForm(selectedItemDetails);
+            detailsForm.ShowDialog();
+        }
+
+        // Autonomous Functions
+
+        public void SaveListsToFile() {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Strong_list.txt")) {
+                foreach (string name in StrongList) {
+                    var currentPlayer = name.Split(':')[0];
+                    var currentReason = name.Split(':')[1];
+                    file.WriteLine($"{currentPlayer}: {currentReason}");
+                }
+            }
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Weak_list.txt")) {
+                foreach (string name in WeakList) {
+                    var currentPlayer = name.Split(':')[0];
+                    var currentReason = name.Split(':')[1];
+                    file.WriteLine($"{currentPlayer}: {currentReason}");
+                }
+            }
+        }
+        public void SelectedChanged(object sender, EventArgs e) {
+            ListBox selectedListBox = (ListBox) sender;
+
+            CheckSelection(selectedListBox, StrongBox);
+            CheckSelection(selectedListBox, WeakBox);
+            CheckSelection(selectedListBox, AlliedBox);
+            CheckSelection(selectedListBox, EnemyBox);
+        }
+        public void ClearSelection(ListBox listBox) {
+            listBox.SelectedIndexChanged -= SelectedChanged;
+            listBox.SelectedIndex = -1;
+            listBox.SelectedIndexChanged += SelectedChanged;
+        }
+        public void CheckSelection(ListBox listBox, ListBox Reference) {
+            if (listBox != Reference) {
+                ClearSelection(Reference);
+            }
+        }
+
+        private void InstructionLabel_Click(object sender, EventArgs e) {
+
+        }
     }
-
-
 
     public static class InputBox {
         public static string Show(string title, string promptText) {

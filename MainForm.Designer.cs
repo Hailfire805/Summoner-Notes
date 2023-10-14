@@ -132,7 +132,6 @@
             // 
             resources.ApplyResources(this.EnemyLabel, "EnemyLabel");
             this.EnemyLabel.Name = "EnemyLabel";
-            this.EnemyLabel.Click += new System.EventHandler(this.EnemyLabel_Click);
             // 
             // EnemyBox
             // 
@@ -163,6 +162,7 @@
             resources.ApplyResources(this.InstructionLabel, "InstructionLabel");
             this.InstructionLabel.Name = "InstructionLabel";
             this.InstructionLabel.UseMnemonic = false;
+            this.InstructionLabel.Click += new System.EventHandler(this.InstructionLabel_Click);
             // 
             // PreviousButton
             // 
@@ -209,11 +209,12 @@
             // 
             resources.ApplyResources(this.Count, "Count");
             this.Count.Name = "Count";
+            this.Count.TextChanged += new System.EventHandler(this.Count_TextChanged);
             this.Count.Enter += new System.EventHandler(this.Count_Enter);
             // 
             // MainForm
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             resources.ApplyResources(this, "$this");
             this.BackColor = System.Drawing.SystemColors.Info;
             this.Controls.Add(this.Count);
