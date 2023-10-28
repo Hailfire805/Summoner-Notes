@@ -56,7 +56,6 @@
             resources.ApplyResources(this.AlliedBox, "AlliedBox");
             this.AlliedBox.FormattingEnabled = true;
             this.AlliedBox.Name = "AlliedBox";
-            this.AlliedBox.TabStop = false;
             // 
             // StrongRadioButton
             // 
@@ -127,6 +126,7 @@
             // 
             resources.ApplyResources(this.WeakListLabel, "WeakListLabel");
             this.WeakListLabel.Name = "WeakListLabel";
+            this.WeakListLabel.Click += new System.EventHandler(this.WeakListLabel_Click);
             // 
             // EnemyLabel
             // 
@@ -138,7 +138,6 @@
             resources.ApplyResources(this.EnemyBox, "EnemyBox");
             this.EnemyBox.FormattingEnabled = true;
             this.EnemyBox.Name = "EnemyBox";
-            this.EnemyBox.TabStop = false;
             // 
             // DetailsButton
             // 
@@ -193,9 +192,11 @@
             // 
             // LookupButton
             // 
+            this.LookupButton.CausesValidation = false;
             resources.ApplyResources(this.LookupButton, "LookupButton");
             this.LookupButton.Name = "LookupButton";
             this.LookupButton.UseVisualStyleBackColor = false;
+            this.LookupButton.Click += new System.EventHandler(this.LookupButton_MouseClick);
             this.LookupButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LookupButton_MouseClick);
             // 
             // GamesCount

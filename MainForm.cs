@@ -1,10 +1,12 @@
 ﻿using Camille.Enums;
 using Camille.RiotGames;
+using Camille.RiotGames.MatchV5;
 
 using System;
 using System.Collections.Generic;
 using System.Web.Configuration;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 using Button = System.Windows.Forms.Button;
 using Label = System.Windows.Forms.Label;
@@ -15,12 +17,12 @@ namespace SummonerNotes {
     public partial class MainForm : Form {
 
         // Defualt & Core Variable Declarations
-
         public int playerTeam = 100 | 200;
         public List<string> StrongList = new List<string>();
         public List<string> WeakList = new List<string>();
         public string[] InstructionLists = new string[] { ($"1/4\tSummoner Notes is an application for recording notes on different players that you meet while playing League of Legends.\n\nTo do this it uses the Riot API to lookup the names of the players on each team and allows you to add players you meet to one of two list:\n\nThe first list is for identifying players you felt were playing skillfully or who overall impressed you and that you'd want to play around if you meet them again in the future.\n\nThe second list is for identifying players you felt were playing poorly and who you'd not put your life in the hands of in the future.\n\nThe value of this application is determined by how you chose to use it.\n\nWhen used correctly, you are able to prepare yourself and play around your strongest allies.\n\nIt also allows you to know who on the enemy team you need to shutdown."), ($"2/4\tUsages:\n\nSummoner Notes is a tool that can be used for several different tasks a player may wish to complete in their time playing league."), ($"3/4\tPlayer Details and History"), ($"4/4\tMaking Valuable notes for the future") };
         public int InstructionPage = 1;
+
 
         public MainForm() {
 
@@ -42,41 +44,39 @@ namespace SummonerNotes {
 
         // Events
 
-        // Button Click Events
-
         public void AddButton_Click(object sender, EventArgs e) {
             if (AlliedBox.SelectedIndex != -1) {
                 string selectedPlayer = AlliedBox.SelectedItem.ToString();
-                string reason = InputBox.Show("Add Player", $"Notes for {selectedPlayer}?");
+                string reason = InputBox.Show("Add Player", $"Notes for {selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}?");
                 string selectedList = "";
                 if (!string.IsNullOrWhiteSpace(reason)) {
                     if (StrongRadioButton.Checked) {
-                        StrongList.Add($"{selectedPlayer}: {reason}");
+                        StrongList.Add($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}: {reason}");
                         selectedList = "Strong List";
                     }
                     else if (WeakRadioButton.Checked) {
-                        WeakList.Add($"{selectedPlayer}: {reason}");
+                        WeakList.Add($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}: {reason}");
                         selectedList = "Weak List";
                     }
                     UpdateLists();
-                    MessageBox.Show($"{selectedPlayer} added to the {selectedList} with reason: {reason}");
+                    MessageBox.Show($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()} added to the {selectedList} with reason: {reason}");
                 }
             }
             else if (EnemyBox.SelectedIndex != -1) {
                 string selectedPlayer = EnemyBox.SelectedItem.ToString();
-                string reason = InputBox.Show("Add Player", $"Notes for {selectedPlayer}?");
+                string reason = InputBox.Show("Add Player", $"Notes for {selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}?");
                 string selectedList = "";
                 if (!string.IsNullOrWhiteSpace(reason)) {
                     if (StrongRadioButton.Checked) {
-                        StrongList.Add($"{selectedPlayer}: {reason}");
+                        StrongList.Add($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}: {reason}");
                         selectedList = "Strong List";
                     }
                     else if (WeakRadioButton.Checked) {
-                        WeakList.Add($"{selectedPlayer}: {reason}");
+                        WeakList.Add($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}: {reason}");
                         selectedList = "Weak List";
                     }
                     UpdateLists();
-                    MessageBox.Show($"{selectedPlayer} added to the {selectedList} with reason: {reason}");
+                    MessageBox.Show($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()} added to the {selectedList} with reason: {reason}");
 
                 }
             }
@@ -183,19 +183,13 @@ namespace SummonerNotes {
                 var lines = System.IO.File.ReadAllLines("./Lists/Strong_list.txt");
                 foreach (string line in lines) {
                     if (!string.IsNullOrWhiteSpace(line)) {
-                        var currentLine = line.Split(':');
-                        var name = currentLine[0];
-                        var value = currentLine[1];
-                        StrongList.Add($"{name}: {value}");
+                        StrongList.Add($"{line}");
                     }
                 }
                 lines = System.IO.File.ReadAllLines("./Lists/Weak_list.txt");
                 foreach (string line in lines) {
                     if (!string.IsNullOrWhiteSpace(line)) {
-                        var currentLine = line.Split(':');
-                        var name = currentLine[0];
-                        var value = currentLine[1];
-                        WeakList.Add($"{name}: {value}");
+                        WeakList.Add($"{line}");
                     }
                     UpdateLists();
                 }
@@ -245,18 +239,62 @@ namespace SummonerNotes {
                         }
                     }
                 }
+                var data = GetData(participants);
+                string[] infos = new string[data.Length + 1];
+                for (int i = 0; i < data.Length; i++) {
+                    var d = data[i];
+                    infos[i] = $"Played: {((d.ChampionPlayed.Length >= 15) ? d.ChampionPlayed.PadRight(10) : d.ChampionPlayed.PadRight(10))}\t\t{(d.TeamPosition.Length == 0 ? "ARAM" : d.TeamPosition)}\tKDA: {data[i].Kills} \\ {data[i].Deaths} \\ {data[i].Assists}\t({(data[i].Kills + data[i].Assists) / (decimal) data[i].Deaths:0.00})";
+                }
 
                 for (var participantNumber = 0; participantNumber < participants.Length; participantNumber++) {
+                    var p = participants[participantNumber];
                     if (((int) participants[participantNumber].TeamId) == playerTeam && participants[participantNumber].SummonerName != SummonerBox.Text) {
-                        AlliedBox.Items.Add(participants[participantNumber].SummonerName);
+                        AlliedBox.Items.Add(((p.SummonerName.Length >= 31) ? p.SummonerName.PadRight(31) : p.SummonerName.PadRight(31)) + "\t" + infos[participantNumber]);
+                        ;
                     }
                     else if (((int) participants[participantNumber].TeamId) != playerTeam) {
-                        EnemyBox.Items.Add(participants[participantNumber].SummonerName);
+                        EnemyBox.Items.Add(((p.SummonerName.Length >= 31) ? p.SummonerName.PadRight(31) : p.SummonerName.PadRight(31)) + "\t" + infos[participantNumber]);
 
                     }
                 }
             }
         }
+
+        public class ParticipantData {
+            public string ChampionPlayed;
+            public string TeamPosition;
+            public int Kills;
+            public int Deaths;
+            public int Assists;
+        }
+
+        public ParticipantData[] GetData(Participant[] participants) {
+            ParticipantData[] payload = new ParticipantData[participants.Length];
+            for (int i = 0; i < participants.Length; i++) {
+                payload[i] = ParticipantReturn(participants, i);
+            }
+            return payload;
+        }
+
+        public ParticipantData ParticipantReturn(Participant[] participants, int participantNumber) {
+            Participant participant = participants[participantNumber];
+            string champion = participant.ChampionName;
+            string position = participant.TeamPosition;
+            int kills = participant.Kills;
+            int deaths = participant.Deaths;
+            int assists = participant.Assists;
+
+            ParticipantData data = new ParticipantData();
+            data.ChampionPlayed = champion;
+            data.TeamPosition = position;
+            data.Kills = kills;
+            data.Deaths = deaths;
+            data.Assists = assists;
+            return data;
+        }
+
+
+
         public void ShowDetailsForm(string selectedItemDetails) {
             DetailsForm detailsForm = new DetailsForm(selectedItemDetails);
             detailsForm.ShowDialog();
@@ -267,16 +305,14 @@ namespace SummonerNotes {
         public void SaveListsToFile() {
             using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Strong_list.txt")) {
                 foreach (string name in StrongList) {
-                    var currentPlayer = name.Split(':')[0];
-                    var currentReason = name.Split(':')[1];
-                    file.WriteLine($"{currentPlayer}: {currentReason}");
+                    var currentPlayer = name;
+                    file.WriteLine($"{currentPlayer}");
                 }
             }
             using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Weak_list.txt")) {
                 foreach (string name in WeakList) {
-                    var currentPlayer = name.Split(':')[0];
-                    var currentReason = name.Split(':')[1];
-                    file.WriteLine($"{currentPlayer}: {currentReason}");
+                    var currentPlayer = name;
+                    file.WriteLine($"{currentPlayer}");
                 }
             }
         }
@@ -300,6 +336,10 @@ namespace SummonerNotes {
         }
 
         private void InstructionLabel_Click(object sender, EventArgs e) {
+
+        }
+
+        private void WeakListLabel_Click(object sender, EventArgs e) {
 
         }
     }

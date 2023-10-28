@@ -119,17 +119,20 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="AlliedBox.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
-  </data>
-  <data name="AlliedBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>270, 38</value>
-  </data>
-  <data name="AlliedBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>418, 108</value>
+    <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="AlliedBox.ItemHeight" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="AlliedBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>167, 29</value>
+  </data>
+  <data name="AlliedBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>820, 388</value>
+  </data>
   <data name="AlliedBox.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
+    <value>4</value>
   </data>
   <data name="&gt;&gt;AlliedBox.Name" xml:space="preserve">
     <value>AlliedBox</value>
@@ -144,16 +147,16 @@
     <value>22</value>
   </data>
   <data name="StrongRadioButton.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Arial, 8.25pt, style=Bold</value>
+    <value>Arial, 9.75pt, style=Bold</value>
   </data>
   <data name="StrongRadioButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>146, 670</value>
+    <value>14, 210</value>
   </data>
   <data name="StrongRadioButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>106, 18</value>
+    <value>147, 23</value>
   </data>
   <data name="StrongRadioButton.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>8</value>
   </data>
   <data name="StrongRadioButton.Text" xml:space="preserve">
     <value>&amp;High Impact</value>
@@ -171,16 +174,16 @@
     <value>21</value>
   </data>
   <data name="WeakRadioButton.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Arial, 8.25pt, style=Bold</value>
+    <value>Arial, 9.75pt, style=Bold</value>
   </data>
   <data name="WeakRadioButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>238, 670</value>
+    <value>14, 239</value>
   </data>
   <data name="WeakRadioButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>106, 18</value>
+    <value>147, 21</value>
   </data>
   <data name="WeakRadioButton.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+    <value>9</value>
   </data>
   <data name="WeakRadioButton.Text" xml:space="preserve">
     <value>Low &amp;Impact</value>
@@ -197,14 +200,17 @@
   <data name="&gt;&gt;WeakRadioButton.ZOrder" xml:space="preserve">
     <value>20</value>
   </data>
+  <data name="AddButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 9.75pt</value>
+  </data>
   <data name="AddButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 661</value>
+    <value>14, 169</value>
   </data>
   <data name="AddButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>60, 35</value>
+    <value>71, 35</value>
   </data>
   <data name="AddButton.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
+    <value>6</value>
   </data>
   <data name="AddButton.Text" xml:space="preserve">
     <value>&amp;Add</value>
@@ -228,10 +234,10 @@
     <value>16</value>
   </data>
   <data name="StrongBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 171</value>
+    <value>14, 452</value>
   </data>
   <data name="StrongBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>330, 484</value>
+    <value>478, 484</value>
   </data>
   <data name="StrongBox.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -255,10 +261,10 @@
     <value>16</value>
   </data>
   <data name="WeakBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>358, 171</value>
+    <value>498, 452</value>
   </data>
   <data name="WeakBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>330, 484</value>
+    <value>489, 484</value>
   </data>
   <data name="WeakBox.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -275,14 +281,17 @@
   <data name="&gt;&gt;WeakBox.ZOrder" xml:space="preserve">
     <value>17</value>
   </data>
+  <data name="RemoveButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 9.75pt</value>
+  </data>
   <data name="RemoveButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>80, 661</value>
+    <value>91, 169</value>
   </data>
   <data name="RemoveButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>60, 35</value>
+    <value>70, 35</value>
   </data>
   <data name="RemoveButton.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
+    <value>7</value>
   </data>
   <data name="RemoveButton.Text" xml:space="preserve">
     <value>&amp;Remove</value>
@@ -299,14 +308,17 @@
   <data name="&gt;&gt;RemoveButton.ZOrder" xml:space="preserve">
     <value>16</value>
   </data>
+  <data name="ClearButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 9.75pt</value>
+  </data>
   <data name="ClearButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>80, 111</value>
+    <value>14, 382</value>
   </data>
   <data name="ClearButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>60, 35</value>
+    <value>70, 35</value>
   </data>
   <data name="ClearButton.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+    <value>11</value>
   </data>
   <data name="ClearButton.Text" xml:space="preserve">
     <value>&amp;Clear All</value>
@@ -327,10 +339,10 @@
     <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
   </data>
   <data name="AlliedLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>267, 9</value>
+    <value>167, 3</value>
   </data>
   <data name="AlliedLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>419, 17</value>
+    <value>820, 27</value>
   </data>
   <data name="AlliedLabel.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -354,13 +366,13 @@
     <value>14</value>
   </data>
   <data name="StrongListLabel.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
+    <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="StrongListLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 152</value>
+    <value>17, 420</value>
   </data>
   <data name="StrongListLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>330, 16</value>
+    <value>475, 29</value>
   </data>
   <data name="StrongListLabel.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -384,13 +396,13 @@
     <value>13</value>
   </data>
   <data name="WeakListLabel.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
+    <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="WeakListLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>360, 152</value>
+    <value>498, 420</value>
   </data>
   <data name="WeakListLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>326, 16</value>
+    <value>489, 29</value>
   </data>
   <data name="WeakListLabel.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -421,10 +433,10 @@
     <value>NoControl</value>
   </data>
   <data name="EnemyLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>692, 9</value>
+    <value>990, 3</value>
   </data>
   <data name="EnemyLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>419, 17</value>
+    <value>853, 27</value>
   </data>
   <data name="EnemyLabel.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -448,16 +460,19 @@
     <value>10</value>
   </data>
   <data name="EnemyBox.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
+    <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
+  </data>
+  <data name="EnemyBox.ItemHeight" type="System.Int32, mscorlib">
+    <value>16</value>
   </data>
   <data name="EnemyBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>694, 38</value>
+    <value>993, 29</value>
   </data>
   <data name="EnemyBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>417, 108</value>
+    <value>850, 388</value>
   </data>
   <data name="EnemyBox.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>5</value>
   </data>
   <data name="&gt;&gt;EnemyBox.Name" xml:space="preserve">
     <value>EnemyBox</value>
@@ -471,14 +486,17 @@
   <data name="&gt;&gt;EnemyBox.ZOrder" xml:space="preserve">
     <value>11</value>
   </data>
+  <data name="DetailsButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 9.75pt</value>
+  </data>
   <data name="DetailsButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 111</value>
+    <value>88, 382</value>
   </data>
   <data name="DetailsButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>60, 35</value>
+    <value>73, 35</value>
   </data>
   <data name="DetailsButton.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
+    <value>10</value>
   </data>
   <data name="DetailsButton.Text" xml:space="preserve">
     <value>&amp;Details</value>
@@ -499,13 +517,13 @@
     <value>Microsoft Sans Serif, 9.75pt</value>
   </data>
   <data name="Instructions.Location" type="System.Drawing.Point, System.Drawing">
-    <value>697, 168</value>
+    <value>993, 452</value>
   </data>
   <data name="Instructions.ScrollBars" type="System.Windows.Forms.RichTextBoxScrollBars, System.Windows.Forms">
     <value>None</value>
   </data>
   <data name="Instructions.Size" type="System.Drawing.Size, System.Drawing">
-    <value>417, 311</value>
+    <value>850, 311</value>
   </data>
   <data name="Instructions.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -539,10 +557,10 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
   </data>
   <data name="InstructionLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>692, 149</value>
+    <value>993, 420</value>
   </data>
   <data name="InstructionLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>420, 16</value>
+    <value>850, 29</value>
   </data>
   <data name="InstructionLabel.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
@@ -569,13 +587,13 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="PreviousButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>946, 485</value>
+    <value>993, 769</value>
   </data>
   <data name="PreviousButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>80, 23</value>
   </data>
   <data name="PreviousButton.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>12</value>
   </data>
   <data name="PreviousButton.Text" xml:space="preserve">
     <value>Previous</value>
@@ -599,13 +617,13 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="NextButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1032, 485</value>
+    <value>1763, 769</value>
   </data>
   <data name="NextButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>80, 23</value>
   </data>
   <data name="NextButton.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
+    <value>13</value>
   </data>
   <data name="NextButton.Text" xml:space="preserve">
     <value>Next</value>
@@ -629,7 +647,7 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>14, 29</value>
   </data>
   <data name="SummonerBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>209, 22</value>
+    <value>147, 22</value>
   </data>
   <data name="SummonerBox.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -656,13 +674,13 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>17, 7</value>
   </data>
   <data name="SummonerLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 19</value>
+    <value>144, 19</value>
   </data>
   <data name="SummonerLabel.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
   </data>
   <data name="SummonerLabel.Text" xml:space="preserve">
-    <value>Enter Your Summoner Name</value>
+    <value>Summoner Name</value>
   </data>
   <data name="SummonerLabel.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleCenter</value>
@@ -683,13 +701,13 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>Microsoft Sans Serif, 9.75pt</value>
   </data>
   <data name="LookupButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>156, 65</value>
+    <value>14, 139</value>
   </data>
   <data name="LookupButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>67, 24</value>
+    <value>147, 24</value>
   </data>
   <data name="LookupButton.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+    <value>3</value>
   </data>
   <data name="LookupButton.Text" xml:space="preserve">
     <value>&amp;Lookup Player</value>
@@ -710,7 +728,7 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>17, 17</value>
   </metadata>
   <data name="GamesCount.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
+    <value>Microsoft Sans Serif, 9.75pt, style=Bold</value>
   </data>
   <data name="GamesCount.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
@@ -719,13 +737,13 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>12, 57</value>
   </data>
   <data name="GamesCount.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 32</value>
+    <value>149, 51</value>
   </data>
   <data name="GamesCount.TabIndex" type="System.Int32, mscorlib">
     <value>12</value>
   </data>
   <data name="GamesCount.Text" xml:space="preserve">
-    <value>Games To Return:</value>
+    <value>Games To Return</value>
   </data>
   <data name="GamesCount.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleCenter</value>
@@ -743,16 +761,16 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>1</value>
   </data>
   <data name="Count.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Microsoft Sans Serif, 11.25pt, style=Underline</value>
+    <value>Microsoft Sans Serif, 9.75pt, style=Underline</value>
   </data>
   <data name="Count.Location" type="System.Drawing.Point, System.Drawing">
-    <value>83, 64</value>
+    <value>14, 111</value>
   </data>
   <data name="Count.Size" type="System.Drawing.Size, System.Drawing">
-    <value>67, 24</value>
+    <value>147, 22</value>
   </data>
   <data name="Count.TabIndex" type="System.Int32, mscorlib">
-    <value>13</value>
+    <value>2</value>
   </data>
   <data name="Count.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Center</value>
@@ -782,7 +800,7 @@ When used correctly, you are able to prepare yourself and play around your stron
     <value>GrowAndShrink</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>1137, 726</value>
+    <value>1855, 1036</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Summoner Notes</value>
