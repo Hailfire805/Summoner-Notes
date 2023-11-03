@@ -5,6 +5,7 @@ using Camille.RiotGames.MatchV5;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Web.Configuration;
 using System.Windows.Forms;
@@ -23,7 +24,7 @@ namespace SummonerNotes
         public string[] InstructionsList = new string[] { };
         public int playerTeam = 100 | 200;
         public List<string> StrongList = new List<string>();
-        public List<string> WeakList = new List<string>(); 
+        public List<string> WeakList = new List<string>();
         public int InstructionPage = 1;
         
         public MainForm() {
@@ -44,45 +45,40 @@ namespace SummonerNotes
 
         // Events
 
-            // Button Events
-
+        // Button Events
+        public void AddToList(ListBox[] Boxes)
+            {
+            foreach (ListBox Box in Boxes) {
+                if (Box.SelectedIndex != -1) {
+                    string selectedPlayer = Box.SelectedItem.ToString();
+                    string parsedPlayer = $"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}";
+                    string reason = InputBox.Show("Add Player", $"Notes for {parsedPlayer}?");
+                    string text = $"{parsedPlayer}: {reason}";
+                    if (!string.IsNullOrWhiteSpace(reason)) {
+                        if (StrongRadioButton.Checked) {
+                            StrongList.Add(text);
+                            }
+                        else if (WeakRadioButton.Checked) {
+                            WeakList.Add(text);
+                            }
+                        UpdateLists();
+                        MessageBox.Show($"{parsedPlayer} added to {(StrongRadioButton.Checked ? "High Impact List" : "Low Impact List")}");
+                        }
+                    }
+                }
+            }
+        public void OpenDetails(ListBox[] Boxes)
+            {
+            foreach (ListBox Box in Boxes) {
+                if (Box.SelectedIndex != -1) {
+                    ShowDetailsForm(Box.SelectedItem.ToString());
+                    }
+                }
+            }
         public void AddButton_Click(object sender, EventArgs e) {
-            if (AlliedBox.SelectedIndex != -1) {
-                string selectedPlayer = AlliedBox.SelectedItem.ToString();
-                string reason = InputBox.Show("Add Player", $"Notes for {selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}?");
-                string selectedList = "";
-                if (!string.IsNullOrWhiteSpace(reason)) {
-                    if (StrongRadioButton.Checked) {
-                        StrongList.Add($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}: {reason}");
-                        selectedList = "Strong List";
-                    }
-                    else if (WeakRadioButton.Checked) {
-                        WeakList.Add($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}: {reason}");
-                        selectedList = "Weak List";
-                    }
-                    UpdateLists();
-                    MessageBox.Show($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()} added to the {selectedList} with reason: {reason}");
-                }
-            }
-            else if (EnemyBox.SelectedIndex != -1) {
-                string selectedPlayer = EnemyBox.SelectedItem.ToString();
-                string reason = InputBox.Show("Add Player", $"Notes for {selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}?");
-                string selectedList = "";
-                if (!string.IsNullOrWhiteSpace(reason)) {
-                    if (StrongRadioButton.Checked) {
-                        StrongList.Add($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}: {reason}");
-                        selectedList = "Strong List";
-                    }
-                    else if (WeakRadioButton.Checked) {
-                        WeakList.Add($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()}: {reason}");
-                        selectedList = "Weak List";
-                    }
-                    UpdateLists();
-                    MessageBox.Show($"{selectedPlayer.Split(':')[0].Substring(0, (selectedPlayer.Split(':')[0].Length - 6)).Trim()} added to the {selectedList} with reason: {reason}");
-
-                }
-            }
-        }
+            ListBox[] boxes = { AlliedBox, EnemyBox };
+            AddToList(boxes);
+           }
         public void ClearButton_Click(object sender, EventArgs e)
             {
             StrongList.Clear();
@@ -92,12 +88,8 @@ namespace SummonerNotes
             UpdateLists();
         }
         public void DetailsButton_Click(object sender, EventArgs e) {
-            if (WeakBox.SelectedIndex != -1) {
-                ShowDetailsForm(WeakBox.SelectedItem.ToString());
-            }
-            else if (StrongBox.SelectedIndex != -1) {
-                ShowDetailsForm(StrongBox.SelectedItem.ToString());
-            }
+            ListBox[] Boxes = { StrongBox, WeakBox };
+            OpenDetails(Boxes);
         }
         public void RemoveButton_Click(object sender, EventArgs e) {
             if (StrongBox.SelectedIndex != -1) {

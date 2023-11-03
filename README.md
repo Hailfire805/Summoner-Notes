@@ -45,4 +45,4 @@ ___Summoner Scanner_ isn't endorsed by Riot Games and doesn't reflect the views 
 * ~~Champion played, role, and KDA to players List~~
 * ~~Can view details form for each player captured on lists~~
 * ~~Instructions are now adjustable and extendable~~
-  
+* ~~Note Details now parse and separates notes using commas and periods into different lines~~

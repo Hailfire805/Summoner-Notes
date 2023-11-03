@@ -26,24 +26,30 @@
             this.DetailsLabel = new System.Windows.Forms.Label();
             this.Detail_Tabs = new System.Windows.Forms.TabControl();
             this.Notes = new System.Windows.Forms.TabPage();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.NoteBox2 = new System.Windows.Forms.TextBox();
             this.Match_History = new System.Windows.Forms.TabPage();
+            this.HistoryBox = new System.Windows.Forms.ListBox();
             this.Synergy_Stats = new System.Windows.Forms.TabPage();
             this.Ranked = new System.Windows.Forms.TabPage();
             this.Champions = new System.Windows.Forms.TabPage();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.SynergyBox = new System.Windows.Forms.ListBox();
+            this.RankedBox = new System.Windows.Forms.ListBox();
+            this.ChampionsBox = new System.Windows.Forms.ListBox();
+            this.NoteBox1 = new System.Windows.Forms.TextBox();
             this.Detail_Tabs.SuspendLayout();
             this.Notes.SuspendLayout();
             this.Match_History.SuspendLayout();
+            this.Synergy_Stats.SuspendLayout();
+            this.Ranked.SuspendLayout();
+            this.Champions.SuspendLayout();
             this.SuspendLayout();
             // 
             // DetailsLabel
             // 
             this.DetailsLabel.Location = new System.Drawing.Point(25, 9);
             this.DetailsLabel.Name = "DetailsLabel";
-            this.DetailsLabel.Size = new System.Drawing.Size(176, 25);
+            this.DetailsLabel.Size = new System.Drawing.Size(478, 25);
             this.DetailsLabel.TabIndex = 0;
             this.DetailsLabel.Text = "Selected Player";
             // 
@@ -67,8 +73,8 @@
             // Notes
             // 
             this.Notes.Controls.Add(this.richTextBox1);
-            this.Notes.Controls.Add(this.textBox2);
-            this.Notes.Controls.Add(this.textBox1);
+            this.Notes.Controls.Add(this.NoteBox2);
+            this.Notes.Controls.Add(this.NoteBox1);
             this.Notes.Location = new System.Drawing.Point(4, 25);
             this.Notes.Name = "Notes";
             this.Notes.Padding = new System.Windows.Forms.Padding(3);
@@ -77,9 +83,30 @@
             this.Notes.Text = "Notes";
             this.Notes.UseVisualStyleBackColor = true;
             // 
+            // richTextBox1
+            // 
+            this.richTextBox1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.richTextBox1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.richTextBox1.Location = new System.Drawing.Point(535, 22);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.ReadOnly = true;
+            this.richTextBox1.Size = new System.Drawing.Size(227, 73);
+            this.richTextBox1.TabIndex = 2;
+            this.richTextBox1.TabStop = false;
+            this.richTextBox1.Text = "";
+            // 
+            // NoteBox2
+            // 
+            this.NoteBox2.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.NoteBox2.Location = new System.Drawing.Point(273, 22);
+            this.NoteBox2.Multiline = true;
+            this.NoteBox2.Name = "NoteBox2";
+            this.NoteBox2.Size = new System.Drawing.Size(255, 361);
+            this.NoteBox2.TabIndex = 1;
+            // 
             // Match_History
             // 
-            this.Match_History.Controls.Add(this.listBox1);
+            this.Match_History.Controls.Add(this.HistoryBox);
             this.Match_History.Location = new System.Drawing.Point(4, 25);
             this.Match_History.Name = "Match_History";
             this.Match_History.Padding = new System.Windows.Forms.Padding(3);
@@ -88,8 +115,19 @@
             this.Match_History.Text = "Match History";
             this.Match_History.UseVisualStyleBackColor = true;
             // 
+            // HistoryBox
+            // 
+            this.HistoryBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.HistoryBox.FormattingEnabled = true;
+            this.HistoryBox.Location = new System.Drawing.Point(6, 27);
+            this.HistoryBox.Name = "HistoryBox";
+            this.HistoryBox.Size = new System.Drawing.Size(756, 355);
+            this.HistoryBox.TabIndex = 0;
+            this.HistoryBox.SelectedIndexChanged += new System.EventHandler(this.HistoryBox_SelectedIndexChanged);
+            // 
             // Synergy_Stats
             // 
+            this.Synergy_Stats.Controls.Add(this.SynergyBox);
             this.Synergy_Stats.Location = new System.Drawing.Point(4, 25);
             this.Synergy_Stats.Name = "Synergy_Stats";
             this.Synergy_Stats.Size = new System.Drawing.Size(768, 390);
@@ -99,6 +137,7 @@
             // 
             // Ranked
             // 
+            this.Ranked.Controls.Add(this.RankedBox);
             this.Ranked.Location = new System.Drawing.Point(4, 25);
             this.Ranked.Name = "Ranked";
             this.Ranked.Size = new System.Drawing.Size(768, 390);
@@ -108,6 +147,7 @@
             // 
             // Champions
             // 
+            this.Champions.Controls.Add(this.ChampionsBox);
             this.Champions.Location = new System.Drawing.Point(4, 25);
             this.Champions.Name = "Champions";
             this.Champions.Size = new System.Drawing.Size(768, 390);
@@ -115,40 +155,42 @@
             this.Champions.Text = "Champions";
             this.Champions.UseVisualStyleBackColor = true;
             // 
-            // listBox1
+            // SynergyBox
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(6, 27);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(756, 355);
-            this.listBox1.TabIndex = 0;
+            this.SynergyBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.SynergyBox.FormattingEnabled = true;
+            this.SynergyBox.Location = new System.Drawing.Point(6, 27);
+            this.SynergyBox.Name = "SynergyBox";
+            this.SynergyBox.Size = new System.Drawing.Size(756, 355);
+            this.SynergyBox.TabIndex = 1;
+            this.SynergyBox.SelectedIndexChanged += new System.EventHandler(this.SynergyBox_SelectedIndexChanged);
             // 
-            // textBox1
+            // RankedBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 21);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(255, 362);
-            this.textBox1.TabIndex = 0;
+            this.RankedBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.RankedBox.FormattingEnabled = true;
+            this.RankedBox.Location = new System.Drawing.Point(6, 27);
+            this.RankedBox.Name = "RankedBox";
+            this.RankedBox.Size = new System.Drawing.Size(756, 355);
+            this.RankedBox.TabIndex = 1;
             // 
-            // textBox2
+            // ChampionsBox
             // 
-            this.textBox2.Location = new System.Drawing.Point(273, 22);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(255, 361);
-            this.textBox2.TabIndex = 1;
+            this.ChampionsBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.ChampionsBox.FormattingEnabled = true;
+            this.ChampionsBox.Location = new System.Drawing.Point(6, 27);
+            this.ChampionsBox.Name = "ChampionsBox";
+            this.ChampionsBox.Size = new System.Drawing.Size(756, 355);
+            this.ChampionsBox.TabIndex = 1;
             // 
-            // richTextBox1
+            // NoteBox1
             // 
-            this.richTextBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.richTextBox1.Location = new System.Drawing.Point(535, 22);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(227, 73);
-            this.richTextBox1.TabIndex = 2;
-            this.richTextBox1.TabStop = false;
-            this.richTextBox1.Text = "";
+            this.NoteBox1.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.NoteBox1.Location = new System.Drawing.Point(12, 21);
+            this.NoteBox1.Multiline = true;
+            this.NoteBox1.Name = "NoteBox1";
+            this.NoteBox1.Size = new System.Drawing.Size(255, 362);
+            this.NoteBox1.TabIndex = 0;
             // 
             // DetailsForm
             // 
@@ -163,6 +205,9 @@
             this.Notes.ResumeLayout(false);
             this.Notes.PerformLayout();
             this.Match_History.ResumeLayout(false);
+            this.Synergy_Stats.ResumeLayout(false);
+            this.Ranked.ResumeLayout(false);
+            this.Champions.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -176,9 +221,12 @@
         private System.Windows.Forms.TabPage Synergy_Stats;
         private System.Windows.Forms.TabPage Ranked;
         private System.Windows.Forms.TabPage Champions;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.TextBox NoteBox2;
+        private System.Windows.Forms.ListBox HistoryBox;
         private System.Windows.Forms.RichTextBox richTextBox1;
-    }
+        private System.Windows.Forms.ListBox SynergyBox;
+        private System.Windows.Forms.ListBox RankedBox;
+        private System.Windows.Forms.ListBox ChampionsBox;
+        private System.Windows.Forms.TextBox NoteBox1;
+        }
 }
