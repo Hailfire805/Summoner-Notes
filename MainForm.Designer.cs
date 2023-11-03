@@ -64,7 +64,6 @@
             this.StrongRadioButton.Name = "StrongRadioButton";
             this.StrongRadioButton.TabStop = true;
             this.StrongRadioButton.UseVisualStyleBackColor = true;
-            this.StrongRadioButton.CheckedChanged += new System.EventHandler(this.StrongRadioButton_CheckedChanged);
             // 
             // WeakRadioButton
             // 
@@ -72,7 +71,6 @@
             this.WeakRadioButton.Name = "WeakRadioButton";
             this.WeakRadioButton.TabStop = true;
             this.WeakRadioButton.UseVisualStyleBackColor = true;
-            this.WeakRadioButton.CheckedChanged += new System.EventHandler(this.WeakRadioButton_CheckedChanged);
             // 
             // AddButton
             // 
@@ -87,7 +85,6 @@
             this.StrongBox.FormattingEnabled = true;
             this.StrongBox.Name = "StrongBox";
             this.StrongBox.TabStop = false;
-            this.StrongBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.StrongBox_DrawItem);
             // 
             // WeakBox
             // 
@@ -96,7 +93,6 @@
             this.WeakBox.Name = "WeakBox";
             this.WeakBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.WeakBox.TabStop = false;
-            this.WeakBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.WeakBox_DrawItem);
             // 
             // RemoveButton
             // 
@@ -126,7 +122,6 @@
             // 
             resources.ApplyResources(this.WeakListLabel, "WeakListLabel");
             this.WeakListLabel.Name = "WeakListLabel";
-            this.WeakListLabel.Click += new System.EventHandler(this.WeakListLabel_Click);
             // 
             // EnemyLabel
             // 
@@ -154,14 +149,12 @@
             this.Instructions.ReadOnly = true;
             this.Instructions.ShortcutsEnabled = false;
             this.Instructions.TabStop = false;
-            this.Instructions.TextChanged += new System.EventHandler(this.Instructions_TextChanged);
             // 
             // InstructionLabel
             // 
             resources.ApplyResources(this.InstructionLabel, "InstructionLabel");
             this.InstructionLabel.Name = "InstructionLabel";
             this.InstructionLabel.UseMnemonic = false;
-            this.InstructionLabel.Click += new System.EventHandler(this.InstructionLabel_Click);
             // 
             // PreviousButton
             // 
@@ -210,7 +203,6 @@
             // 
             resources.ApplyResources(this.Count, "Count");
             this.Count.Name = "Count";
-            this.Count.TextChanged += new System.EventHandler(this.Count_TextChanged);
             this.Count.Enter += new System.EventHandler(this.Count_Enter);
             // 
             // MainForm

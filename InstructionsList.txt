@@ -1,0 +1,19 @@
+1/5Overview & Purpose:
+Sometimes we don't even realize when we have played with a player before expect for the times it leaves a really bad memory, but what if you could remember both the good and the bad experiences.
+
+"Summoner Notes" is a helpful tool to not forget about your mental notes on different players that you meet while playing League of Legends. 
+The way it works is by using 2 lists:
+
+The first list is where you can make note of players you had fun with or that really impressed you. Or maybe an enemy who played super well and you want to know next time you face them or maybe have them on your side.
+
+The second list is where you can make of players you did not enjoy playing with, or who fell flat of what you want if you're going to have to put your life in someone else's hands for a play.
+
+The value of this application is determined by how you chose to use it. When used correctly, you are able to prepare yourself to play around your strongest allies and to know who on the enemy team you need to shutdown. There's even more cool features I'll explain in the next page.
+
+Legal: 
+Summoner Notes was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games.  Riot Games does not endorse or sponsor this project.
+2/5What Can This App Do For You?
+Summoner Notes is a tool that can be used for several different tasks a player may wish to complete in their time playing league.
+3/5Detail & Synergy Breakdown For Each Entry:
+4/5How To Make Valuable Notes While Using This Application:
+5/5Planned Features:

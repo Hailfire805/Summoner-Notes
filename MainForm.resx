@@ -529,17 +529,7 @@
     <value>0</value>
   </data>
   <data name="Instructions.Text" xml:space="preserve">
-    <value>1/4               Summoner Notes is an application for recording notes on different players that you meet while playing League of Legends
-
-To do this  it uses the Riot API to lookup the names of the players on each team and allows you to add players you meet to one of two list:
-
-List 1 is for players you felt were playing skillfully or who overall impressed you and that you'd want to play around if you meet them again in the future
-
-List 2 is for players you felt were playing poorly and who you'd not put your life in the hands of in the future
-
-The value of this application is determined by how you chose to use it. 
-
-When used correctly, you are able to prepare yourself and play around your strongest allies. It also allows you to know who on the enemy team you need to shutdown.</value>
+    <value />
   </data>
   <data name="&gt;&gt;Instructions.Name" xml:space="preserve">
     <value>Instructions</value>

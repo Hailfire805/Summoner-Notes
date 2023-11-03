@@ -4,38 +4,38 @@ using Camille.RiotGames.MatchV5;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
 using System.Web.Configuration;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 using Button = System.Windows.Forms.Button;
 using Label = System.Windows.Forms.Label;
 using ListBox = System.Windows.Forms.ListBox;
 using TextBox = System.Windows.Forms.TextBox;
 
-namespace SummonerNotes {
+namespace SummonerNotes
+    {
     public partial class MainForm : Form {
 
         // Defualt & Core Variable Declarations
+
+        public string[] InstructionsList = new string[] { };
         public int playerTeam = 100 | 200;
         public List<string> StrongList = new List<string>();
-        public List<string> WeakList = new List<string>();
-        public string[] InstructionLists = new string[] { ($"1/4\tSummoner Notes is an application for recording notes on different players that you meet while playing League of Legends.\n\nTo do this it uses the Riot API to lookup the names of the players on each team and allows you to add players you meet to one of two list:\n\nThe first list is for identifying players you felt were playing skillfully or who overall impressed you and that you'd want to play around if you meet them again in the future.\n\nThe second list is for identifying players you felt were playing poorly and who you'd not put your life in the hands of in the future.\n\nThe value of this application is determined by how you chose to use it.\n\nWhen used correctly, you are able to prepare yourself and play around your strongest allies.\n\nIt also allows you to know who on the enemy team you need to shutdown."), ($"2/4\tUsages:\n\nSummoner Notes is a tool that can be used for several different tasks a player may wish to complete in their time playing league."), ($"3/4\tPlayer Details and History"), ($"4/4\tMaking Valuable notes for the future") };
+        public List<string> WeakList = new List<string>(); 
         public int InstructionPage = 1;
-
-
+        
         public MainForm() {
 
             // Initalization
 
             InitializeComponent();
             LoadListsFromFile();
-
+            getInstructions();
 
             // Startup Events
 
-            WeakBox.DrawItem += WeakBox_DrawItem;
-            StrongBox.DrawItem += StrongBox_DrawItem;
             WeakBox.SelectedIndexChanged += SelectedChanged;
             StrongBox.SelectedIndexChanged += SelectedChanged;
             AlliedBox.SelectedIndexChanged += SelectedChanged;
@@ -43,6 +43,8 @@ namespace SummonerNotes {
         }
 
         // Events
+
+            // Button Events
 
         public void AddButton_Click(object sender, EventArgs e) {
             if (AlliedBox.SelectedIndex != -1) {
@@ -81,7 +83,8 @@ namespace SummonerNotes {
                 }
             }
         }
-        public void ClearButton_Click(object sender, EventArgs e) {
+        public void ClearButton_Click(object sender, EventArgs e)
+            {
             StrongList.Clear();
             WeakList.Clear();
             SaveListsToFile();
@@ -113,7 +116,7 @@ namespace SummonerNotes {
                 PreviousButton.Visible = false;
             }
             NextButton.Visible = true;
-            Instructions.Text = $"{InstructionLists[newpage - 1]}";
+            Instructions.Text = $"{InstructionsList[newpage - 1]}";
         }
         public void NextButton_Click(object sender, EventArgs e) {
             int newpage = InstructionPage < 4 ? InstructionPage += 1 : InstructionPage;
@@ -121,7 +124,7 @@ namespace SummonerNotes {
                 NextButton.Visible = false;
             }
             PreviousButton.Visible = true;
-            Instructions.Text = $"{InstructionLists[newpage - 1]}";
+            Instructions.Text = $"{InstructionsList[newpage - 1]}";
 
         }
         public void LookupButton_MouseClick(object sender, EventArgs e) {
@@ -130,8 +133,7 @@ namespace SummonerNotes {
             GetPlayers();
         }
 
-
-        // Text Focus Events
+            // Text Events
 
         public void SummonerBox_Enter(object sender, EventArgs e) {
             if (SummonerBox.Text == "Name...") {
@@ -148,33 +150,58 @@ namespace SummonerNotes {
                 SummonerBox.Text = "Name...";
             }
         }
+        public void SelectedChanged(object sender, EventArgs e) {
+            ListBox selectedListBox = (ListBox) sender;
 
-        // Text Content Events
-
-        public void Instructions_TextChanged(object sender, EventArgs e) {
-
+            CheckSelection(selectedListBox, StrongBox);
+            CheckSelection(selectedListBox, WeakBox);
+            CheckSelection(selectedListBox, AlliedBox);
+            CheckSelection(selectedListBox, EnemyBox);
         }
-        public void Count_TextChanged(object sender, EventArgs e) {
-
+        public void ClearSelection(ListBox listBox) {
+            listBox.SelectedIndexChanged -= SelectedChanged;
+            listBox.SelectedIndex = -1;
+            listBox.SelectedIndexChanged += SelectedChanged;
         }
-        public void StrongRadioButton_CheckedChanged(object sender, EventArgs e) {
-
-        }
-        public void WeakRadioButton_CheckedChanged(object sender, EventArgs e) {
-
-        }
-        public void StrongBox_DrawItem(object sender, DrawItemEventArgs e) {
-        }
-        public void WeakBox_DrawItem(object sender, DrawItemEventArgs e) {
-        }
-        public void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
-            SaveListsToFile();
+        public void CheckSelection(ListBox listBox, ListBox Reference) {
+            if (listBox != Reference) {
+                ClearSelection(Reference);
+            }
         }
 
         // Functions
 
-        // Startup Functions
+            // Startup Functions
 
+        public void getInstructions()
+            {
+            string filePath = "C:\\Users\\bradc\\DevDrives\\SummonerNotes\\InstructionsList.txt";
+            List<string> sections = new List<string>();
+            string currentSection = string.Empty;
+
+            using (StreamReader reader = new StreamReader(filePath)) {
+                string line;
+                while ((line = reader.ReadLine()) != null) {
+                    // Use a regular expression to match lines with the pattern of a number followed by a slash and another number.
+                    if (Regex.IsMatch(line, @"\d+/\d+")) {
+                        if (!string.IsNullOrEmpty(currentSection)) {
+                            sections.Add(currentSection);
+                            }
+                        line = Regex.Replace(line, pattern: @"\d+/\d+", "");
+                        currentSection = line;
+                        }
+                    else {
+                        currentSection += Environment.NewLine + line;
+                        }
+                    }
+
+                if (!string.IsNullOrEmpty(currentSection)) {
+                    sections.Add(currentSection);
+                    }
+                }
+            InstructionsList = sections.ToArray();
+            Instructions.Text = InstructionsList[0];
+            }
         public void LoadListsFromFile() {
             if (System.IO.File.Exists("./Lists/Strong_list.txt") && System.IO.File.Exists("./Lists/Weak_list.txt")) {
                 StrongList.Clear();
@@ -202,7 +229,27 @@ namespace SummonerNotes {
             WeakBox.Items.AddRange(WeakList.ToArray());
         }
 
-        // Task Functions
+            // Closing Functions
+
+        public void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
+            SaveListsToFile();
+        }
+        public void SaveListsToFile() {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Strong_list.txt")) {
+                foreach (string name in StrongList) {
+                    var currentPlayer = name;
+                    file.WriteLine($"{currentPlayer}");
+                }
+            }
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Weak_list.txt")) {
+                foreach (string name in WeakList) {
+                    var currentPlayer = name;
+                    file.WriteLine($"{currentPlayer}");
+                }
+            }
+        }
+
+            // Task Functions
 
         public void GetPlayers() {
             var RiotApiKey = WebConfigurationManager.AppSettings["RiotApiKey"];
@@ -243,7 +290,8 @@ namespace SummonerNotes {
                 string[] infos = new string[data.Length + 1];
                 for (int i = 0; i < data.Length; i++) {
                     var d = data[i];
-                    infos[i] = $"Played: {((d.ChampionPlayed.Length >= 15) ? d.ChampionPlayed.PadRight(10) : d.ChampionPlayed.PadRight(10))}\t\t{(d.TeamPosition.Length == 0 ? "ARAM" : d.TeamPosition)}\tKDA: {data[i].Kills} \\ {data[i].Deaths} \\ {data[i].Assists}\t({(data[i].Kills + data[i].Assists) / (decimal) data[i].Deaths:0.00})";
+                    decimal KDA = (d.Kills + d.Assists) / (d.Deaths == 0 ? 1: d.Deaths);
+                    infos[i] = $"Played: {((d.ChampionPlayed.Length >= 15) ? d.ChampionPlayed.PadRight(10) : d.ChampionPlayed.PadRight(10))}\t\t{(d.TeamPosition.Length == 0 ? "ARAM" : d.TeamPosition)}\tKDA: {data[i].Kills} \\ {data[i].Deaths} \\ {data[i].Assists}\t{(decimal) KDA:0.00})";
                 }
 
                 for (var participantNumber = 0; participantNumber < participants.Length; participantNumber++) {
@@ -259,6 +307,12 @@ namespace SummonerNotes {
                 }
             }
         }
+        public void ShowDetailsForm(string selectedItemDetails) {
+            DetailsForm detailsForm = new DetailsForm(selectedItemDetails);
+            detailsForm.ShowDialog();
+        }
+
+            // Riot API Functions
 
         public class ParticipantData {
             public string ChampionPlayed;
@@ -267,7 +321,6 @@ namespace SummonerNotes {
             public int Deaths;
             public int Assists;
         }
-
         public ParticipantData[] GetData(Participant[] participants) {
             ParticipantData[] payload = new ParticipantData[participants.Length];
             for (int i = 0; i < participants.Length; i++) {
@@ -275,7 +328,6 @@ namespace SummonerNotes {
             }
             return payload;
         }
-
         public ParticipantData ParticipantReturn(Participant[] participants, int participantNumber) {
             Participant participant = participants[participantNumber];
             string champion = participant.ChampionName;
@@ -291,56 +343,6 @@ namespace SummonerNotes {
             data.Deaths = deaths;
             data.Assists = assists;
             return data;
-        }
-
-
-
-        public void ShowDetailsForm(string selectedItemDetails) {
-            DetailsForm detailsForm = new DetailsForm(selectedItemDetails);
-            detailsForm.ShowDialog();
-        }
-
-        // Autonomous Functions
-
-        public void SaveListsToFile() {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Strong_list.txt")) {
-                foreach (string name in StrongList) {
-                    var currentPlayer = name;
-                    file.WriteLine($"{currentPlayer}");
-                }
-            }
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Weak_list.txt")) {
-                foreach (string name in WeakList) {
-                    var currentPlayer = name;
-                    file.WriteLine($"{currentPlayer}");
-                }
-            }
-        }
-        public void SelectedChanged(object sender, EventArgs e) {
-            ListBox selectedListBox = (ListBox) sender;
-
-            CheckSelection(selectedListBox, StrongBox);
-            CheckSelection(selectedListBox, WeakBox);
-            CheckSelection(selectedListBox, AlliedBox);
-            CheckSelection(selectedListBox, EnemyBox);
-        }
-        public void ClearSelection(ListBox listBox) {
-            listBox.SelectedIndexChanged -= SelectedChanged;
-            listBox.SelectedIndex = -1;
-            listBox.SelectedIndexChanged += SelectedChanged;
-        }
-        public void CheckSelection(ListBox listBox, ListBox Reference) {
-            if (listBox != Reference) {
-                ClearSelection(Reference);
-            }
-        }
-
-        private void InstructionLabel_Click(object sender, EventArgs e) {
-
-        }
-
-        private void WeakListLabel_Click(object sender, EventArgs e) {
-
         }
     }
 
