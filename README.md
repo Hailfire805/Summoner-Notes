@@ -18,6 +18,8 @@ ___Summoner Scanner_ isn't endorsed by Riot Games and doesn't reflect the views 
 * Add background color for player names to signify if the player won with the player or lost with them
   * Add the reverse for the enemy team
     
+* handle user input capitalization
+
 * Create a settings box
   * Allow the user to set a default summoner name which is cached within the application
   * Allow the user to change their region
@@ -39,6 +41,9 @@ ___Summoner Scanner_ isn't endorsed by Riot Games and doesn't reflect the views 
   * capture the player's ranked stats and history
   * capture the player's champion mastery stats
   * Create UI to allow users to input and modify their notes for players
+  
+* implement overlay for displaying info and notes on players in your game
+    
   
 # Added Features
 

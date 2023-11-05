@@ -17,33 +17,30 @@ using TextBox = System.Windows.Forms.TextBox;
 
 namespace SummonerNotes
     {
-    public partial class MainForm : Form {
-
+    public partial class MainForm : Form
+        {
         // Defualt & Core Variable Declarations
-
         public string[] InstructionsList = new string[] { };
         public int playerTeam = 100 | 200;
         public List<string> StrongList = new List<string>();
         public List<string> WeakList = new List<string>();
         public int InstructionPage = 1;
-        
-        public MainForm() {
+
+        public MainForm()
+            {
 
             // Initalization
-
             InitializeComponent();
-            LoadListsFromFile();
+            LoadWeakAndStrong();
             getInstructions();
+            LoadPlayer();
 
             // Startup Events
-
             WeakBox.SelectedIndexChanged += SelectedChanged;
             StrongBox.SelectedIndexChanged += SelectedChanged;
             AlliedBox.SelectedIndexChanged += SelectedChanged;
             EnemyBox.SelectedIndexChanged += SelectedChanged;
-        }
-
-        // Events
+            }
 
         // Button Events
         public void AddToList(ListBox[] Boxes)
@@ -61,7 +58,7 @@ namespace SummonerNotes
                         else if (WeakRadioButton.Checked) {
                             WeakList.Add(text);
                             }
-                        UpdateLists();
+                        RefreshLists();
                         MessageBox.Show($"{parsedPlayer} added to {(StrongRadioButton.Checked ? "High Impact List" : "Low Impact List")}");
                         }
                     }
@@ -75,96 +72,110 @@ namespace SummonerNotes
                     }
                 }
             }
-        public void AddButton_Click(object sender, EventArgs e) {
+        public void AddButton_Click(object sender, EventArgs e)
+            {
             ListBox[] boxes = { AlliedBox, EnemyBox };
             AddToList(boxes);
-           }
+            }
         public void ClearButton_Click(object sender, EventArgs e)
             {
             StrongList.Clear();
             WeakList.Clear();
-            SaveListsToFile();
-            LoadListsFromFile();
-            UpdateLists();
-        }
-        public void DetailsButton_Click(object sender, EventArgs e) {
+            SaveWeakAndStrong();
+            LoadWeakAndStrong();
+            }
+        public void DetailsButton_Click(object sender, EventArgs e)
+            {
             ListBox[] Boxes = { StrongBox, WeakBox };
             OpenDetails(Boxes);
-        }
-        public void RemoveButton_Click(object sender, EventArgs e) {
+            }
+        public void RemoveButton_Click(object sender, EventArgs e)
+            {
             if (StrongBox.SelectedIndex != -1) {
                 string selectedPlayer = StrongBox.SelectedItem.ToString(); // Use SelectedItem instead of SelectedValue
                 StrongList.Remove(selectedPlayer); // Remove the entire entry
-            }
+                }
             else if (WeakBox.SelectedIndex != -1) {
                 string selectedPlayer = WeakBox.SelectedItem.ToString(); // Use SelectedItem instead of SelectedValue
                 WeakList.Remove(selectedPlayer); // Remove the entire entry
+                };
             }
-            UpdateLists();
-        }
-        public void PreviousButton_Click(object sender, EventArgs e) {
+        public void PreviousButton_Click(object sender, EventArgs e)
+            {
             int newpage = InstructionPage > 1 ? InstructionPage -= 1 : InstructionPage;
             if (newpage == 1) {
                 PreviousButton.Visible = false;
-            }
+                }
             NextButton.Visible = true;
             Instructions.Text = $"{InstructionsList[newpage - 1]}";
-        }
-        public void NextButton_Click(object sender, EventArgs e) {
+            }
+        public void NextButton_Click(object sender, EventArgs e)
+            {
             int newpage = InstructionPage < 4 ? InstructionPage += 1 : InstructionPage;
             if (newpage == 4) {
                 NextButton.Visible = false;
-            }
+                }
             PreviousButton.Visible = true;
             Instructions.Text = $"{InstructionsList[newpage - 1]}";
 
-        }
-        public void LookupButton_MouseClick(object sender, EventArgs e) {
+            }
+        public void LookupButton_MouseClick(object sender, EventArgs e)
+            {
             AlliedBox.Items.Clear();
             EnemyBox.Items.Clear();
             GetPlayers();
-        }
+            }
 
-            // Text Events
-
-        public void SummonerBox_Enter(object sender, EventArgs e) {
+        // Text Events
+        public void SummonerBox_Enter(object sender, EventArgs e)
+            {
             if (SummonerBox.Text == "Name...") {
                 SummonerBox.Text = "";
+                }
             }
-        }
-        public void Count_Enter(object sender, EventArgs e) {
+        public void Count_Enter(object sender, EventArgs e)
+            {
             if (Count.Text == "Games To Return") {
                 Count.Text = "";
+                }
             }
-        }
-        public void SummonerBox_Leave(object sender, EventArgs e) {
+        public void SummonerBox_Leave(object sender, EventArgs e)
+            {
             if (SummonerBox.Text == "") {
                 SummonerBox.Text = "Name...";
+                }
             }
-        }
-        public void SelectedChanged(object sender, EventArgs e) {
+        public void SelectedChanged(object sender, EventArgs e)
+            {
             ListBox selectedListBox = (ListBox) sender;
 
             CheckSelection(selectedListBox, StrongBox);
             CheckSelection(selectedListBox, WeakBox);
             CheckSelection(selectedListBox, AlliedBox);
             CheckSelection(selectedListBox, EnemyBox);
-        }
-        public void ClearSelection(ListBox listBox) {
+            }
+        public void ClearSelection(ListBox listBox)
+            {
             listBox.SelectedIndexChanged -= SelectedChanged;
             listBox.SelectedIndex = -1;
             listBox.SelectedIndexChanged += SelectedChanged;
-        }
-        public void CheckSelection(ListBox listBox, ListBox Reference) {
+            }
+        public void CheckSelection(ListBox listBox, ListBox Reference)
+            {
             if (listBox != Reference) {
                 ClearSelection(Reference);
+                }
             }
+
+        // Task Functions
+        public void ShowDetailsForm(string selectedItemDetails) {
+            DetailsForm detailsForm = new DetailsForm(selectedItemDetails);
+            detailsForm.ShowDialog();
         }
-
-        // Functions
-
-            // Startup Functions
-
+        public void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
+            SaveWeakAndStrong();
+            SavePlayer();
+        }
         public void getInstructions()
             {
             string filePath = "C:\\Users\\bradc\\DevDrives\\SummonerNotes\\InstructionsList.txt";
@@ -194,58 +205,77 @@ namespace SummonerNotes
             InstructionsList = sections.ToArray();
             Instructions.Text = InstructionsList[0];
             }
-        public void LoadListsFromFile() {
-            if (System.IO.File.Exists("./Lists/Strong_list.txt") && System.IO.File.Exists("./Lists/Weak_list.txt")) {
-                StrongList.Clear();
-                WeakList.Clear();
+        public void RefreshLists()
+            {
+            SaveWeakAndStrong();
+            LoadWeakAndStrong();
+            }
 
-                var lines = System.IO.File.ReadAllLines("./Lists/Strong_list.txt");
-                foreach (string line in lines) {
-                    if (!string.IsNullOrWhiteSpace(line)) {
-                        StrongList.Add($"{line}");
+        // Save Functions
+        public void SavePlayer()
+            {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Player.txt")) {
+                if (SummonerBox.Text != null && SummonerBox.Text != "Name...") {
+                    var player = SummonerBox.Text;
+                    file.WriteLine($"{player}");
                     }
                 }
-                lines = System.IO.File.ReadAllLines("./Lists/Weak_list.txt");
-                foreach (string line in lines) {
-                    if (!string.IsNullOrWhiteSpace(line)) {
-                        WeakList.Add($"{line}");
+            }
+        public void SaveList(List<string> list, string file)
+            {
+            using (System.IO.StreamWriter Savefile = new System.IO.StreamWriter(file)) {
+                foreach (string name in list) {
+                    var currentPlayer = name;
+                    Savefile.WriteLine($"{currentPlayer}");
                     }
-                    UpdateLists();
                 }
             }
-        }
-        public void UpdateLists() {
-            StrongBox.Items.Clear();
-            WeakBox.Items.Clear();
-            StrongBox.Items.AddRange(StrongList.ToArray());
-            WeakBox.Items.AddRange(WeakList.ToArray());
-        }
+        public void SaveWeakAndStrong() {
+            var Strong = (StrongList, "./Lists/Strong_list.txt");
+            var Weak = (WeakList, "./Lists/Weak_list.txt");
+            SaveList(Strong.ToTuple().Item1, Strong.ToTuple().Item2);
+            SaveList(Weak.ToTuple().Item1, Weak.ToTuple().Item2);
+            }
 
-            // Closing Functions
-
-        public void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
-            SaveListsToFile();
-        }
-        public void SaveListsToFile() {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Strong_list.txt")) {
-                foreach (string name in StrongList) {
-                    var currentPlayer = name;
-                    file.WriteLine($"{currentPlayer}");
+        // Load Functions
+        public void LoadPlayer()
+            {
+            if (System.IO.File.Exists("./Lists/Player.txt")) {
+                var lines = System.IO.File.ReadAllLines("./Lists/Player.txt");
+                SummonerBox.Text = lines[0];
                 }
             }
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter("./Lists/Weak_list.txt")) {
-                foreach (string name in WeakList) {
-                    var currentPlayer = name;
-                    file.WriteLine($"{currentPlayer}");
+        public string[] LoadFile(string file)
+            {
+            if (System.IO.File.Exists(file)) {
+                var lines = System.IO.File.ReadAllLines(file);
+                return lines;
+                }
+            else {
+                throw new ArgumentException("Invalid File Name");
                 }
             }
-        }
-
-            // Task Functions
-
+        public void LoadAndClearList(string file, List<string> list)
+            {
+            string[] fileLines = LoadFile(file);
+            list.Clear();
+            foreach (string line in fileLines) {
+                list.Add(line);
+                }
+            }
+        public void LoadWeakAndStrong()
+            {
+            var Weak = ("./Lists/Weak_list.txt", WeakList);
+            var Strong = ("./Lists/Strong_list.txt", StrongList);
+            LoadAndClearList(Weak.ToTuple().Item1, Weak.ToTuple().Item2);
+            LoadAndClearList(Strong.ToTuple().Item1, Strong.ToTuple().Item2);
+            }
+        
+        // Riot API Functions
         public void GetPlayers() {
             var RiotApiKey = WebConfigurationManager.AppSettings["RiotApiKey"];
             var riotApi = RiotGamesApi.NewInstance(RiotApiKey);
+
             // Get summoners by name synchronously. (Note: async is faster as it allows simultaneous requests).
             var summoners = new[]
             {
@@ -283,7 +313,7 @@ namespace SummonerNotes
                 for (int i = 0; i < data.Length; i++) {
                     var d = data[i];
                     decimal KDA = (d.Kills + d.Assists) / (d.Deaths == 0 ? 1: d.Deaths);
-                    infos[i] = $"Played: {((d.ChampionPlayed.Length >= 15) ? d.ChampionPlayed.PadRight(10) : d.ChampionPlayed.PadRight(10))}\t\t{(d.TeamPosition.Length == 0 ? "ARAM" : d.TeamPosition)}\tKDA: {data[i].Kills} \\ {data[i].Deaths} \\ {data[i].Assists}\t{(decimal) KDA:0.00})";
+                    infos[i] = $"Played: {((d.ChampionPlayed.Length >= 15) ? d.ChampionPlayed.PadRight(10) : d.ChampionPlayed.PadRight(10))}\t\t{(d.TeamPosition.Length == 0 ? "ARAM" : d.TeamPosition)}\tKDA: {data[i].Kills} \\ {data[i].Deaths} \\ {data[i].Assists}\t({(decimal) KDA:0.00})";
                 }
 
                 for (var participantNumber = 0; participantNumber < participants.Length; participantNumber++) {
@@ -299,13 +329,6 @@ namespace SummonerNotes
                 }
             }
         }
-        public void ShowDetailsForm(string selectedItemDetails) {
-            DetailsForm detailsForm = new DetailsForm(selectedItemDetails);
-            detailsForm.ShowDialog();
-        }
-
-            // Riot API Functions
-
         public class ParticipantData {
             public string ChampionPlayed;
             public string TeamPosition;
