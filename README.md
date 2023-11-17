@@ -28,6 +28,14 @@ ___Summoner Scanner_ isn't endorsed by Riot Games and doesn't reflect the views 
   * Allow the user to adjust the stats or information they want to be displayed in the allied and enemy players' lists
   * Allow the user to modify the stats and details they want to have shown on the details form.    
 
+* Measure Game Quality
+  * Pull and compare Individual Player Ranks and Account Levels
+  * Compare Winrates amongs top 3 champions
+  * Compare Head to Head Positional Differences
+  * Compare Team Kill Spread Difference
+  * Compare Total Gold Difference
+  * 
+
 # Planned Features
 
 * Redesign using Overwolf Electron
